@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import connectDB from "./config/db.js";
 import authRouter from "./modules/auth/auth.route.js";
+import userRouter from './modules/user/user.route.js'
 import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
@@ -26,6 +27,7 @@ connectDB();
 
 // routes
 app.use("/api/auth", authRouter);
+app.use ('/api/user', userRouter);
 
 //error middleware
 app.use(errorMiddleware);

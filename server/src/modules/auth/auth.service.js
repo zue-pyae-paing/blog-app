@@ -2,6 +2,8 @@ import User from "../../model/user.model.js";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
 import {
   generateAcceptToken,
   genetateRefreshToken,
@@ -30,14 +32,14 @@ const authService = {
     if (!user) {
       throw createError.Unauthorized("User not found");
     }
-    const isMatchPassword = bcrypt.compare(password, user.password);
+    const isMatchPassword = await bcrypt.compare(password, user.password);
     if (!isMatchPassword) {
       throw createError.Unauthorized("Invalid credentials");
     }
     const accessToken = generateAcceptToken(user);
     const refreshToken = genetateRefreshToken(user);
 
-    user.refreshTokens.push({ token: refreshToken });
+    user.refreshToken=refreshToken;
     await user.save();
 
     const userObject = user.toObject();
@@ -69,13 +71,17 @@ const authService = {
       throw createError.BadRequest("User not found");
     }
     const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     const expireTime = Date.now() + 1000 * 60 * 10;
     user.tokenExpiry = expireTime;
-    user.resetToken = resetToken;
+    user.resetToken = hashedToken;
     await user.save();
-    return { resetToken };
+    return { hashedToken };
   },
-  resetPassword: async (token) => {
+  resetPassword: async (token, password) => {
     if (!token) {
       throw createError.BadRequest("Reset Token is required");
     }

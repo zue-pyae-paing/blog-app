@@ -14,7 +14,7 @@ const userSchema = new Schema({
   },
   avatar: { type: String },
   avatarId: { type: String },
-  refreshTokens: [{ token: String }],
+  refreshToken: { type: String },
   createdAt: { type: Date, required: true, default: Date.now() },
 });
 

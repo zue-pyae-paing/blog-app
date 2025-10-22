@@ -1,4 +1,5 @@
 import authService from "./auth.service.js";
+import { sendEmail } from "../../utils/sendEmail.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -40,11 +41,10 @@ export const refreshToken = async (req, res, next) => {
   }
 };
 
-
 export const forgetPassword = async (req, res, next) => {
   try {
-    const { resetToken } = await authService.forgetPassword(req.body.email);
-    const link = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const { hashedToken } = await authService.forgetPassword(req.body.email);
+    const link = `${process.env.CLIENT_URL}/reset-password/${hashedToken}`;
     await sendEmail(req.body.email, "Reset Password", link);
     res
       .status(200)
@@ -56,7 +56,11 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { message } = await authService.resetPassword(req.params.token);
+    const { password } = req.body;
+    const { message } = await authService.resetPassword(
+      req.params.token,
+      password
+    );
     res.status(200).json({ data: { success: true, message } });
   } catch (error) {
     next(error);

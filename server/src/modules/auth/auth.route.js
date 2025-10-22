@@ -24,4 +24,6 @@ router.post("/forget-password", forgetPassword);
 //PUT http://localhost:8080/api/auth/reset-password:token
 router.put("/reset-password/:token", resetPassword);
 
+
+
 export default router;

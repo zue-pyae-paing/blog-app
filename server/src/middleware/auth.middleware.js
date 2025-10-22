@@ -1,14 +1,14 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 
-const authorizeMiddleware = (req, res, next) => {
+const authMiddleware  = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return next(createError.Unauthorized("No token provided"));
   }
 
-  // Expected format: "Bearer <token>"
+
   const accessToken = authHeader.split(" ")[1];
   if (!accessToken) {
     return next(createError.Unauthorized("Invalid token format"));
@@ -26,4 +26,4 @@ const authorizeMiddleware = (req, res, next) => {
   }
 };
 
-export default authorizeMiddleware;
+export default authMiddleware ;
