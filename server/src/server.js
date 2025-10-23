@@ -5,6 +5,7 @@ import "dotenv/config";
 import connectDB from "./config/db.js";
 import authRouter from "./modules/auth/auth.route.js";
 import userRouter from './modules/user/user.route.js'
+import blogRouter from './modules/blog/blog.route.js'
 import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
@@ -28,6 +29,7 @@ connectDB();
 // routes
 app.use("/api/auth", authRouter);
 app.use ('/api/user', userRouter);
+app.use('/api/blog', blogRouter)
 
 //error middleware
 app.use(errorMiddleware);
