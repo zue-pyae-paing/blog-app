@@ -11,7 +11,7 @@ import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
 
-const PORT = process.env.PORT;
+// const PORT = process.env.PORT;
 
 // middlewares
 app.use(express.json());
@@ -39,6 +39,6 @@ app.use("/api/comment", commentRouter);
 //error middleware
 app.use(errorMiddleware);
 
-app.listen(PORT, () =>
-  console.log("Server running on => http://localhost:" + PORT)
-);
+// app.listen(PORT, () =>
+//   console.log("Server running on => http://localhost:" + PORT)
+// );
