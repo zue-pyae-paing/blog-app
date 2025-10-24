@@ -1,5 +1,5 @@
-import { get } from "mongoose";
 import Blog from "../../model/blog.model.js";
+import Comment from "../../model/comment.model.js";
 import { imagekit } from "../../utils/imageKit.js";
 
 const blogService = {
@@ -26,13 +26,17 @@ const blogService = {
     const blog = await Blog.findById(blogId)
       .select("-imageId ")
       .populate("author", "username avatar email")
+      .populate({
+        path: "comments",
+        populate: { path: "author", select: "username avatar " },
+      })
       .lean();
     if (!blog) throw new Error("Blog not found");
     return blog;
   },
   getOwnBlogs: async (userId, limit = 10, cursor = null) => {
     if (!userId) throw new Error("User ID is required");
-    const filter = { author: userId };
+    const filter = { author: { $eq: userId } };
     if (cursor) {
       filter._id = { $lt: cursor };
     }
@@ -155,8 +159,29 @@ const blogService = {
         throw new Error("Error deleting image from ImageKit");
       }
     }
+    await Comment.deleteMany({ blogId });
     await blog.deleteOne();
     return { message: "Blog deleted successfully" };
+  },
+  // Like blog
+  likeBlog: async (userId, blogId) => {
+    if (!userId) throw new Error("User ID is required");
+    if (!blogId) throw new Error("Blog ID is required");
+    const blog = await Blog.findById(blogId);
+    if (!blog) throw new Error("Blog not found");
+    blog.likes.push(userId);
+    await blog.save();
+    return blog;
+  },
+  // Unlike blog
+  unlikeBlog: async (userId, blogId) => {
+    if (!userId) throw new Error("User ID is required");
+    if (!blogId) throw new Error("Blog ID is required");
+    const blog = await Blog.findById(blogId);
+    if (!blog) throw new Error("Blog not found");
+    blog.likes.pull(userId);
+    await blog.save();
+    return blog;
   },
 };
 

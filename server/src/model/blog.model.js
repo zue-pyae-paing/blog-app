@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const blogSchema = new Schema({
-  title: { type: String, required: true,},
+  title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },
   imageId: { type: String, required: true },
@@ -9,8 +9,9 @@ const blogSchema = new Schema({
   content: { type: String, required: true },
   readingTime: { type: Number, required: true },
   category: { type: String, required: true, tolowerCase: true },
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   views: { type: Number, default: 0 },
-  likes: { type: Number, default: 0 },
+  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   createdAt: { type: Date, required: true, default: Date.now() },
 });
 

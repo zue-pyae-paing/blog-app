@@ -50,7 +50,7 @@ export const getOwnBlogs = async (req, res, next) => {
     const userId = req.user.id;
     const { limit, cursor } = req.query;
 
-    const blogs = await blogService.getOwnBlogs(
+    const { blogs, nextCursor } = await blogService.getOwnBlogs(
       userId,
       parseInt(limit) || 10,
       cursor || null
@@ -60,7 +60,7 @@ export const getOwnBlogs = async (req, res, next) => {
       data: {
         success: true,
         blogs,
-        nextCursor: blogs.nextCursor,
+        nextCursor,
       },
     });
   } catch (error) {
@@ -123,4 +123,20 @@ export const deleteBlog = async (req, res, next) => {
     next(error);
   }
 };
-export const likeBlog = async (req, res, next) => {};
+export const likeBlog = async (req, res, next) => {
+  try {
+    const blog = await blogService.likeBlog(req.user.id, req.params.id);
+    res.status(200).json({ data: { success: true, blog } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unlikeBlog = async (req, res, next) => {
+  try {
+    const blog = await blogService.unlikeBlog(req.user.id, req.params.id);
+    res.status(200).json({ data: { success: true, blog } });
+  } catch (error) {
+    next(error);
+  }
+};

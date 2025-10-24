@@ -1,13 +1,12 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 
-const authMiddleware  = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return next(createError.Unauthorized("No token provided"));
   }
-
 
   const accessToken = authHeader.split(" ")[1];
   if (!accessToken) {
@@ -20,10 +19,11 @@ const authMiddleware  = (req, res, next) => {
       return next(createError.Unauthorized("Invalid token or expired"));
     }
     req.user = user;
+
     next();
   } catch (err) {
     return next(createError.Unauthorized("Invalid or expired token"));
   }
 };
 
-export default authMiddleware ;
+export default authMiddleware;
