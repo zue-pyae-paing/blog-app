@@ -39,6 +39,9 @@ app.use("/api/comment", commentRouter);
 //error middleware
 app.use(errorMiddleware);
 
+export default app;
+
+
 // app.listen(PORT, () =>
 //   console.log("Server running on => http://localhost:" + PORT)
 // );
