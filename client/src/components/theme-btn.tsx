@@ -7,11 +7,10 @@ const ThemeBtn = () => {
   return (
     <div className=" flex gap-3">
       <button
-        className="btn btn-primary btn-outline btn-sm"
-        onClick={() => setTheme(theme === "light" ? "forest" : "light")}
+        className="btn btn-primary  btn-sm btn-square"
+        onClick={() => setTheme(theme === "light" ? "night" : "light")}
       >
         {theme === "light" ? <Sun /> : <MoonStar />}
-        {theme === "light" ? "Light" : "Dark"}
       </button>
     </div>
   );

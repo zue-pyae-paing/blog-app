@@ -8,6 +8,7 @@ import {
   getSingleBlog,
   getTrendingBlogs,
   likeBlog,
+  publishBlog,
   unlikeBlog,
   updateBlog,
 } from "./blog.controller.js";
@@ -19,7 +20,7 @@ import optionalAuthMiddleware from "../../middleware/optionalAuth.middleware.js"
 const router = Router();
 
 // GET http://localhost:8080/api/blog/all
-router.get("/all", getAllBlog);
+router.get("/", getAllBlog);
 
 //Get http://localhost:8080/api/blog/my-blogs
 router.get("/my-blogs", authMiddleware, getOwnBlogs);
@@ -49,6 +50,9 @@ router.patch("/like/:id", authMiddleware, likeBlog);
 
 //PATCH  http://localhost:8080/api/blog/unlike/:id
 router.patch("/unlike/:id", authMiddleware, unlikeBlog);
+
+//PATCH  http://localhost:8080/api/blog/publish/:id
+router.patch("/publish/:id", authMiddleware, publishBlog);
 
 // DELETE http://localhost:8080/api/blog/delete/:id
 router.delete("/delete/:id", authMiddleware, deleteBlog);

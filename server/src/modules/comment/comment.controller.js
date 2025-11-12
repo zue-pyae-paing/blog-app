@@ -3,8 +3,10 @@ import commentService from "./comment.service.js";
 export const getAllComments = async (req, res, next) => {
   try {
     const blogId = req.params.blogId;
-    const comments = await commentService.getComments(blogId);
-    res.status(200).json({ data: { success: true, comments } });
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const {comments,totalPages,totalComments} = await commentService.getComments(blogId, page, limit);
+    res.status(200).json({ data: { success: true, comments,totalComments,totalPages } });
   } catch (error) {
     next(error);
   }
@@ -26,7 +28,35 @@ export const createComment = async (req, res, next) => {
   }
 };
 
+export const getComment = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const blogId = req.params.blogId;
+    const commentId = req.params.id;
+    const comments = await commentService.getComment(blogId, userId, commentId);
+    res.status(200).json({ data: { success: true, comments } });
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const editComment = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const blogId = req.params.blogId;
+    const commentId = req.params.id;
+    const content = req.body.content;
+    const editedComment = await commentService.editComment(
+      userId,
+      blogId,
+      commentId,
+      content
+    );
+    res.status(200).json({ data: { success: true, editedComment } });
+  } catch (error) {
+    next(error);
+  }
+};
 export const deleteComment = async (req, res, next) => {
   try {
     const userId = req.user.id;

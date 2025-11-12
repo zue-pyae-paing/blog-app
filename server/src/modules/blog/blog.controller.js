@@ -5,7 +5,7 @@ export const getAllBlog = async (req, res, next) => {
     const { page, limit, category, search } = req.query;
 
     const pageInt = parseInt(page) || 1;
-    const limitInt = parseInt(limit) || 10;
+    const limitInt = parseInt(limit) || 12;
     const { blogs, totalBlogs, totalPages } = await blogService.getAllBlogs(
       pageInt,
       limitInt,
@@ -15,24 +15,41 @@ export const getAllBlog = async (req, res, next) => {
     const currentPage = pageInt;
     const hasNextPage = pageInt < totalPages;
     const hasPreviousPage = pageInt > 1;
+    const currentPageLink = `${req.protocol}://${req.get(
+      "host"
+    )}/api/blogs/?page=${pageInt}?limit=${limitInt}`;
+    const firstPageLink = `${req.protocol}://${req.get(
+      "host"
+    )}/api/blogs/?page=1?limit=${limitInt}`;
+    const lastPageLink = `${req.protocol}://${req.get(
+      "host"
+    )}/api/blog/?page=${totalPages}?limit=${limitInt}`;
     const nextPageLink = hasNextPage
-      ? `${req.protocol}://${req.get("host")}/api/blog/all?page=${
+      ? `${req.protocol}://${req.get("host")}/api/blogs/?page=${
           pageInt + 1
         }?limit=${limitInt}`
       : null;
     const previousPageLink = hasPreviousPage
-      ? `${req.protocol}://${req.get("host")}/api/blog/all?page=${
+      ? `${req.protocol}://${req.get("host")}/api/blogs/?page=${
           pageInt - 1
         }?limit=${limitInt}`
       : null;
-    const meta = {
-      currentPage,
+
+    const links = {
+      firstPageLink,
+      currentPageLink,
+      lastPageLink,
       nextPageLink,
       previousPageLink,
+    };
+    const meta = {
+      currentPage,
+      nextPage: hasNextPage ? pageInt + 1 : null,
+      previousPage: hasPreviousPage ? pageInt - 1 : null,
       totalBlogs,
       totalPages,
     };
-    res.status(200).json({ data: { success: true, blogs, meta } });
+    res.status(200).json({ data: { success: true, blogs, meta, links } });
   } catch (error) {
     next(error);
   }
@@ -50,17 +67,20 @@ export const getOwnBlogs = async (req, res, next) => {
     const userId = req.user.id;
     const { limit, cursor } = req.query;
 
-    const { blogs, nextCursor } = await blogService.getOwnBlogs(
-      userId,
-      parseInt(limit) || 10,
-      cursor || null
-    );
+    const { blogs, nextCursor, totalBlogs } =
+      await blogService.getOwnBlogs(
+        userId,
+        parseInt(limit) || 10,
+        cursor || null
+      );
 
     res.status(200).json({
       data: {
         success: true,
         blogs,
         nextCursor,
+        totalBlogs,
+        
       },
     });
   } catch (error) {
@@ -135,6 +155,15 @@ export const likeBlog = async (req, res, next) => {
 export const unlikeBlog = async (req, res, next) => {
   try {
     const blog = await blogService.unlikeBlog(req.user.id, req.params.id);
+    res.status(200).json({ data: { success: true, blog } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const publishBlog = async (req, res, next) => {
+  try {
+    const blog = await blogService.publishBlog(req.params.id, req.user.id);
     res.status(200).json({ data: { success: true, blog } });
   } catch (error) {
     next(error);

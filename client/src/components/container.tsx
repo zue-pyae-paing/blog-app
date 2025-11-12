@@ -7,7 +7,9 @@ const Container = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return <div className={` ${className} px-4 md:px-8`}>{children}</div>;
+  return (
+    <div className={` ${className} px-4 md:px-8  mx-auto relative top-20 `}>{children}</div>
+  );
 };
 
 export default Container;

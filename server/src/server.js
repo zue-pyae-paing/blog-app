@@ -17,8 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "*",
     credentials: true,
   })
 );
@@ -28,20 +27,17 @@ app.use(cookieParser());
 connectDB();
 
 // routes
-app.get("/api", (req, res) =>
-  res.status(200).json({ message: " Welcome from the blog app server" })
-);
+app.get("/", (req, res) => res.send("Hello World!"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.use("/api/blog", blogRouter);
-app.use("/api/comment", commentRouter);
+app.use("/api/blogs", blogRouter);
+app.use("/api/comments", commentRouter);
 
 //error middleware
 app.use(errorMiddleware);
 
+app.listen(process.env.PORT, () =>
+  console.log(`Server is running on port ${process.env.PORT}`)
+);
+
 export default app;
-
-
-// app.listen(PORT, () =>
-//   console.log("Server running on => http://localhost:" + PORT)
-// );

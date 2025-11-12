@@ -10,7 +10,7 @@ const blogService = {
     if (category) filter.category = category;
     if (search) filter.title = { $regex: search, $options: "i" };
     const blogs = await Blog.find(filter)
-      .select("-content -imageId ")
+      .select("-content -imageId -comments -likes")
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 })
@@ -34,21 +34,22 @@ const blogService = {
     if (!blog) throw new Error("Blog not found");
     return blog;
   },
-  getOwnBlogs: async (userId, limit = 10, cursor = null) => {
+  getOwnBlogs: async (userId, limit = 10, cursor = null,) => {
     if (!userId) throw new Error("User ID is required");
-    const filter = { author: { $eq: userId } };
+    const filter = { author: { $eq: userId }, };
     if (cursor) {
       filter._id = { $lt: cursor };
     }
     const blogs = await Blog.find(filter)
-      .select("-imageId -content")
+      .select("-imageId -content -comments -likes")
       .sort({ _id: -1 })
       .limit(limit)
-      .populate("author", "username avatar email")
       .lean();
 
     const nextCursor = blogs.length ? blogs[blogs.length - 1]._id : null;
-    return { blogs, nextCursor };
+    const totalBlogs = await Blog.countDocuments({ author: { $eq: userId } });
+    
+    return { blogs, nextCursor, totalBlogs,  };
   },
   // Get trending blogs
   getTrendingBlogs: async () => {
@@ -180,6 +181,18 @@ const blogService = {
     const blog = await Blog.findById(blogId);
     if (!blog) throw new Error("Blog not found");
     blog.likes.pull(userId);
+    await blog.save();
+    return blog;
+  },
+  // Publish Blog
+  publishBlog: async (blogId, userId) => {
+    if (!blogId) throw new Error("Blog ID is required");
+    if (!userId) throw new Error("User ID is required");
+    const blog = await Blog.findById(blogId);
+    if (!blog) throw new Error("Blog not found");
+    if (blog.author.toString() !== userId)
+      throw new Error("You are not authorized to publish this blog");
+    blog.status = "publish";
     await blog.save();
     return blog;
   },

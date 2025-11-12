@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: sunset --default, forest --prefersdark;
+  themes: light --default, night --prefersdark;
+}
+
+.scrrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrrollbar-hide::-webkit-scrollbar-track {
+  display: none;
+}
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #aaa;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
