@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { detialBlog } from "../../../services/blog.service";
-import type {  Blog,  DetailBlog } from "../../../types/blog";
+import useBlogStore from "../../../store/useBlogStore";
 
 const useBlogDetail = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [blog, setBlog] = useState<DetailBlog>({
-    blog: {} as Blog,
-  });
+  const setBlogDetail = useBlogStore((state) => state.setBlogDetail);
 
   const params = useParams();
+
+  
 
   const fetchDetailBlog = async () => {
     try {
@@ -21,8 +21,8 @@ const useBlogDetail = () => {
         toast.error(result.message);
         return;
       }
-      setBlog(result.data);
-      console.log(result.data, 'blog detail');
+
+      setBlogDetail(result.data.blog);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -33,7 +33,7 @@ const useBlogDetail = () => {
   useEffect(() => {
     fetchDetailBlog();
   }, []);
-  return { loading, blog };
+  return { loading };
 };
 
 export default useBlogDetail;

@@ -1,21 +1,21 @@
-import React from "react";
+
 import Container from "../../../components/container";
 import Breadcrumb from "../../../components/breadcrumb";
-import BlogCreateForm from "../components/blog-create-form";
+import BlogEditForm from "../components/blog-edit-form";
 
-type Props = {};
 
-const BlogUpdatePage = (props: Props) => {
+
+const BlogUpdatePage = () => {
   return (
-    <Container>
+    <Container className="mt-20">
       <Breadcrumb />
       <div className="  flex items-center justify-center flex-col gap-y-3">
-        <h1 className=" font-bold text-primary text-4xl">Create New Blog</h1>
+        <h1 className=" font-bold text-primary text-4xl">Update Blog</h1>
         <p className=" text-base font-medium  ">
           Share your thoughts with the world
         </p>
       </div>
-      <BlogCreateForm />
+      <BlogEditForm />
     </Container>
   );
 };

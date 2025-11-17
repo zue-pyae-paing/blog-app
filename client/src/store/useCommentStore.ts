@@ -12,7 +12,7 @@ const useCommentStore = create<CommentState>((set) => ({
   comments: [],
   setComments: (comments) => set({ comments }),
   addComment: (comment) =>
-    set((state) => ({ comments: [...state.comments, comment] })),
+    set((state) => ({ comments: [comment, ...state.comments] })),
   updatedCommet: (cmtId, updateComment) =>
     set((state) => ({
       comments: state.comments.map((comment) =>

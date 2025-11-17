@@ -8,7 +8,9 @@ const viewIncreaseMiddleware = async (req, res, next) => {
     if (!blog) return next(createError.NotFound("Blog not found"));
     if (req.user && req.user.id.toString() === blog.author.toString())
       return next();
-
+    if (blog.status !== "publish") {
+      return next();
+    }
     blog.views += 1;
     await blog.save();
     next();

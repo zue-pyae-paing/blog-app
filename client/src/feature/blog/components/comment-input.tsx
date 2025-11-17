@@ -1,4 +1,4 @@
-import useStoreComment from "../hooks/useStoreComment";
+ import useStoreComment from "../hooks/useStoreComment";
 
 const CommentInput = () => {
   const {
@@ -9,10 +9,11 @@ const CommentInput = () => {
     comment,
   } = useStoreComment();
   return (
-    <div className=" flex items-center flex-col gap-y-3">
+    <div className="sticky top-20 flex items-center flex-col gap-y-3  ">
+      <h2 className=" text-xl font-bold text-primary self-start p-2">Write a comment</h2>
       <textarea
         onChange={handleChangeComment}
-        className="textarea textarea-secondary-content w-full"
+        className="textarea textarea-secondary-content w-full bg-base-200"
         placeholder="Share your thoughts on this article..."
         value={comment}
       ></textarea>

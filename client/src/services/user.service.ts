@@ -51,13 +51,23 @@ export const changepassword = ({
   });
 };
 
-export const getAllOwnBlogs = () => {
-  return fetch(userOwnBlogsApiUrl, { method: "GET", headers: getHeaders() });
+export const getAllOwnBlogs = (status: string = "", cursor: string = "") => {
+  return fetch(`${userOwnBlogsApiUrl}?status=${status}&cursor=${cursor}`, {
+    method: "GET",
+    headers: getHeaders(),
+  });
 };
 
-export const publishBlog = (id:string) => {
+export const publishBlog = (id: string) => {
   return fetch(`${blogBaseApiUrl}/publish/${id}`, {
     method: "PATCH",
+    headers: getHeaders(),
+  });
+};
+
+export const deleteBlog = (id: string) => {
+  return fetch(`${blogBaseApiUrl}/delete/${id}`, {
+    method: "DELETE",
     headers: getHeaders(),
   });
 };

@@ -4,9 +4,20 @@ export const getAllComments = async (req, res, next) => {
   try {
     const blogId = req.params.blogId;
     const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
-    const {comments,totalPages,totalComments} = await commentService.getComments(blogId, page, limit);
-    res.status(200).json({ data: { success: true, comments,totalComments,totalPages } });
+
+    const cursor = req.query.cursor || null;
+    const { comments, totalPages, totalComments, nextCursor, hasMore } =
+      await commentService.getComments(blogId, limit, cursor);
+    res.status(200).json({
+      data: {
+        success: true,
+        comments,
+        totalComments,
+        totalPages,
+        nextCursor,
+        hasMore,
+      },
+    });
   } catch (error) {
     next(error);
   }

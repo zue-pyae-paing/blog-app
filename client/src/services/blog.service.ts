@@ -26,3 +26,13 @@ export const createBlog = async (data: FormData) => {
     body: data,
   });
 };
+
+export const updateBlog = async (id: string, data: FormData) => {
+  return await fetch(blogBaseApiUrl + `/update/${id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: data,
+  });
+};

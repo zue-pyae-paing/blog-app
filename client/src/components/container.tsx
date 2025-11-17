@@ -8,7 +8,9 @@ const Container = ({
   className?: string;
 }) => {
   return (
-    <div className={` ${className} px-4 md:px-8  mx-auto relative top-20 `}>{children}</div>
+    <div className={` ${className} p-4 md:px-8  mx-auto relative  `}>
+      {children}
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ const BlogListSection = () => {
   const { page, blogs, handlePageChange } = useBlog();
 
   return (
-    <section className="md:flex-1 w-full">
+    <section className="md:flex-1 w-full  ">
       <div className=" w-full flex flex-col justify-between gap-y-4 relative md:items-start items-center ">
         <div className=" flex flex-wrap gap-4 items-center md:justify-start justify-center ">
           {blogs?.map((blog) => (

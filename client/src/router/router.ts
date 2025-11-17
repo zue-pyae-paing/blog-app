@@ -47,7 +47,7 @@ const router = createBrowserRouter([
       },
       { path: "create", loader: protectLoader, Component: BlogCreatePage },
       {
-        path: "update/:blogId",
+        path: "edit/:blogId",
         loader: protectLoader,
         Component: BlogUpdatePage,
       },

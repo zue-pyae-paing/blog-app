@@ -4,7 +4,6 @@ import { sendComment } from "../../../services/comment.service";
 import { useParams } from "react-router";
 import useCommentStore from "../../../store/useCommentStore";
 
-
 const useStoreComment = () => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,6 +28,7 @@ const useStoreComment = () => {
       const result = await response.json();
 
       if (result.success === false) toast.error(result.message);
+
       addComment(result.data.newComment);
       toast.success("Comment sent!");
     } catch (error: any) {

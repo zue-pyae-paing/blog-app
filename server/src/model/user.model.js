@@ -15,6 +15,7 @@ const userSchema = new Schema({
   avatar: { type: String },
   avatarId: { type: String },
   refreshToken: { type: String },
+  status: { type: String, enum: ["active", "banned"], default: "active" },
   createdAt: { type: Date, required: true, default: Date.now() },
 });
 

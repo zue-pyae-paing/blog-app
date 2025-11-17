@@ -23,7 +23,7 @@ const BlogFilter = () => {
     fetchCategories();
   }, []);
   return (
-    <div className=" md:block hidden w-64 h-screen  p-3 space-y-2">
+    <div className=" md:block hidden lg:w-64 md:w-full h-auto  px-3 space-y-2">
       <label className=" input border-accent outline-none">
         <Search />
         <input

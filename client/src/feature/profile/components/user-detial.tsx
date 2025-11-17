@@ -11,7 +11,7 @@ const UserDetail = () => {
     .map((name) => name.charAt(0))
     .join("")
     .toLocaleUpperCase();
-  console.log(show);
+  
   return (
     <div className=" flex items-center flex-col ">
       <div

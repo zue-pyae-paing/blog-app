@@ -16,7 +16,7 @@ const SettingPage = () => {
     navigate('/login')
   }
   return (
-    <Container className=" flex flex-col gap-y-3 max-w-3xl">
+    <Container className=" flex flex-col gap-y-3 max-w-3xl mt-20">
       <div>
         <h1 className=" text-xl md:text-3xl font-bold text-primary">
           Edit Profile

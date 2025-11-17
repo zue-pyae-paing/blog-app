@@ -18,7 +18,7 @@ const BlogCreateForm = () => {
   } = useCreateBlog();
 
   return (
-    <form className="relative space-y-3 p-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col py-6 gap-y-3 " onSubmit={handleSubmit(onSubmit)}>
       {/* Title */}
       <div className="bg-base-200 p-6 rounded-lg space-y-3 border border-base-300">
         <h3 className="font-bold text-info text-xl">Post Title</h3>
@@ -149,7 +149,7 @@ const BlogCreateForm = () => {
       <button
         disabled={isSubmitting}
         type="submit"
-        className="btn btn-accent absolute -bottom-6 right-6 flex items-center gap-2 text-white"
+        className="btn btn-accent self-end flex items-center gap-2 text-white"
       >
         <Send size={20} />
         {isSubmitting ? "Publishing..." : "Publish Post"}

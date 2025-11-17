@@ -1,67 +1,113 @@
 import { useState, useEffect } from "react";
-import { getAllOwnBlogs, publishBlog } from "../../../services/user.service";
+import {
+  deleteBlog,
+  getAllOwnBlogs,
+  publishBlog,
+} from "../../../services/user.service";
 import type { Blog } from "../../../types/blog";
-
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 
 const useOwnBlog = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false);
+  const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
   const [ownBlogs, setOwnBlogs] = useState<Blog[]>([]);
-  const [backUpBlogs, setBackUpBlogs] = useState<Blog[]>([]);
-  const [selected, setSelected] = useState<string>("");
+  const [selected, setSelected] = useState<string>("all");
+  const [nextCursor, setNextCursor] = useState<string | null>("");
+  const [totalBlogs, setTotalBlogs] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
-  const fetchOwnBlogs = async () => {
+  const fetchOwnBlogs = async (status: string = "", cursor: string = "") => {
     try {
-      setLoading(true);
-      const res = await getAllOwnBlogs();
+      const res = await getAllOwnBlogs(status, cursor);
       const result = await res.json();
-      if (!res.ok || result.data.success === false) {
-        throw new Error(result.message || "Something went wrong");
+
+      if (!res.ok || !result?.data?.success) {
+        throw new Error(result?.message || "Something went wrong");
       }
-      setOwnBlogs(result.data.blogs);
-      setSelected("all");
-      setBackUpBlogs(result.data.blogs);
-    } catch (error) {
-    } finally {
-      setLoading(false);
+      if (cursor) {
+        setOwnBlogs((prev) => [...prev, ...result?.data?.blogs]);
+      } else {
+        setOwnBlogs(result?.data?.blogs);
+      }
+
+      setTotalBlogs(result?.data?.totalBlogs);
+      setNextCursor(result?.data?.nextCursor);
+      setHasMore(result?.data?.hasMore);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to fetch blogs");
     }
   };
 
   useEffect(() => {
-    fetchOwnBlogs();
-  }, []);
+    setOwnBlogs([]);
+    setNextCursor(null);
+    setHasMore(true);
+    fetchOwnBlogs(selected === "all" ? "" : selected);
+  }, [selected]);
 
-  const handleBlogs = (type: string) => {
-    if (type === "all") {
-      setSelected(type);
-      setOwnBlogs(backUpBlogs);
-    } else {
-      const filteredBlogs = backUpBlogs.filter((blog) => blog.status === type);
-      setSelected(type);
-      setOwnBlogs(filteredBlogs);
-    }
+  const handleLoadMore = () => {
+    if (!hasMore || !nextCursor) return;
+    fetchOwnBlogs(selected === "all" ? "" : selected, nextCursor || "");
   };
+
+  const handleBlogs = (type: string) => setSelected(type);
+
   const handlePublishBlog = async (id: string) => {
     try {
-      setLoading(true);
+      setIsPublishLoading(true);
       const res = await publishBlog(id);
       const result = await res.json();
-      if (!res.ok || result.data.success === false) {
-        toast.error(result.message || "Something went wrong");
+
+      if (!res.ok || !result?.data?.success) {
+        toast.error(result?.message || "Something went wrong");
         return;
       }
-      toast.success(result.message || "Blog published successfully!");
-      fetchOwnBlogs();
+
+      toast.success(result?.message || "Blog published successfully!");
+      fetchOwnBlogs(selected === "all" ? "" : selected);
       navigate("/blog");
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
-      setLoading(false);
+      setIsPublishLoading(false);
     }
   };
-  return { loading, ownBlogs, handleBlogs, selected ,handlePublishBlog};
+
+  const handleDeleteBlog = async (id: string) => {
+    try {
+      setIsDeleteLoading(true);
+      const res = await deleteBlog(id);
+      const result = await res.json();
+
+      if (!res.ok || !result?.data?.success) {
+        toast.error(result?.message || "Something went wrong");
+        return;
+      }
+
+      toast.success(result?.message || "Blog deleted successfully!");
+      setOwnBlogs((prev) => prev.filter((blog) => blog._id !== id));
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
+
+  return {
+    isDeleteLoading,
+    isPublishLoading,
+    ownBlogs,
+    handleBlogs,
+    selected,
+    handlePublishBlog,
+    handleDeleteBlog,
+    hasMore,
+    handleLoadMore,
+    totalBlogs,
+  };
 };
 
 export default useOwnBlog;

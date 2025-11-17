@@ -1,12 +1,13 @@
 import Blog from "../../model/blog.model.js";
 import Comment from "../../model/comment.model.js";
 import { imagekit } from "../../utils/imageKit.js";
+import createError from "http-errors";
 
 const blogService = {
   // Get all blogs with pagination
   getAllBlogs: async (page, limit, category, search) => {
-    if (!page || !limit) throw new Error("Page and limit are required");
-    const filter = {};
+    if (!page || !limit) throw new Error;
+    const filter = { status: "publish" };
     if (category) filter.category = category;
     if (search) filter.title = { $regex: search, $options: "i" };
     const blogs = await Blog.find(filter)
@@ -16,7 +17,7 @@ const blogService = {
       .sort({ createdAt: -1 })
       .populate("author", "username avatar email")
       .lean();
-    const totalBlogs = await Blog.countDocuments();
+    const totalBlogs = await Blog.countDocuments(filter);
     const totalPages = Math.ceil(totalBlogs / limit);
     return { blogs, totalBlogs, totalPages };
   },
@@ -34,23 +35,33 @@ const blogService = {
     if (!blog) throw new Error("Blog not found");
     return blog;
   },
-  getOwnBlogs: async (userId, limit = 10, cursor = null,) => {
+  getOwnBlogs: async (userId, limit = 10, cursor = null, status = "") => {
     if (!userId) throw new Error("User ID is required");
-    const filter = { author: { $eq: userId }, };
+
+    const filter = { author: userId };
+
+    if (status) {
+      filter.status = status;
+    }
+
     if (cursor) {
       filter._id = { $lt: cursor };
     }
+
     const blogs = await Blog.find(filter)
       .select("-imageId -content -comments -likes")
       .sort({ _id: -1 })
       .limit(limit)
       .lean();
 
-    const nextCursor = blogs.length ? blogs[blogs.length - 1]._id : null;
-    const totalBlogs = await Blog.countDocuments({ author: { $eq: userId } });
-    
-    return { blogs, nextCursor, totalBlogs,  };
+    const nextCursor =
+      blogs.length === limit ? blogs[blogs.length - 1]._id : null;
+    const hasMore = nextCursor !== null && blogs.length === limit;
+    const totalBlogs = await Blog.countDocuments(filter);
+
+    return { blogs, nextCursor, totalBlogs, hasMore };
   },
+
   // Get trending blogs
   getTrendingBlogs: async () => {
     const blogs = await Blog.find()
@@ -108,8 +119,9 @@ const blogService = {
 
     if (file) {
       try {
+        const base64Data = file.buffer.toString("base64");
         const uploaded = await imagekit.upload({
-          file: file.buffer,
+          file: base64Data,
           fileName: file.originalname,
           folder: "/blogs",
         });
@@ -128,8 +140,6 @@ const blogService = {
 
         blogToUpdate.image = uploaded.url;
         blogToUpdate.imageId = uploaded.fileId;
-        await blogToUpdate.save();
-        return blogToUpdate;
       } catch (err) {
         throw new Error("Image upload failed: " + err.message);
       }

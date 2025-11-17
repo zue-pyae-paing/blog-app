@@ -6,7 +6,7 @@ const BlogListItem = ({ blog }: { blog: Blog }) => {
   const navigator = useNavigate();
   return (
     <div
-      className=" card bg-primary-content md:w-60 w-70 h-80 shadow-sm hover:translate-y-2 duration-300 transition-all"
+      className=" card bg-primary-content md:w-60 w-75 h-80 shadow-sm hover:translate-y-2 duration-300 transition-all"
       onClick={() => navigator(`/blog/${blog._id}`)}
     >
       <figure>

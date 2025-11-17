@@ -12,7 +12,6 @@ const blogSchema = new Schema({
   category: { type: String, required: true },
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   views: { type: Number, default: 0 },
-  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   createdAt: { type: Date, required: true, default: Date.now() },
 });
 

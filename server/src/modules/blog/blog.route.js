@@ -15,7 +15,6 @@ import {
 import authMiddleware from "../../middleware/auth.middleware.js";
 import uplode from "../../middleware/upload.middleware.js";
 import viewIncreaseMiddleware from "../../middleware/viewIncreace.middleware.js";
-import optionalAuthMiddleware from "../../middleware/optionalAuth.middleware.js";
 
 const router = Router();
 
@@ -28,7 +27,7 @@ router.get("/my-blogs", authMiddleware, getOwnBlogs);
 // GET http://localhost:8080/api/blog/:id
 router.get(
   "/detail/:id",
-  optionalAuthMiddleware,
+
   viewIncreaseMiddleware,
   getSingleBlog
 );
@@ -43,7 +42,7 @@ router.get("/category", getCategories);
 router.post("/create", authMiddleware, uplode.single("image"), createBlog);
 
 // PUT http://localhost:8080/api/blog/update/:id
-router.put("/update/:id", authMiddleware, updateBlog);
+router.put("/update/:id", authMiddleware, uplode.single("image"), updateBlog);
 
 // PATCH http://localhost:8080/api/blog/like/:id
 router.patch("/like/:id", authMiddleware, likeBlog);

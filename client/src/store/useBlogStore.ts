@@ -3,6 +3,9 @@ import type { Blog } from "../types/blog";
 
 interface BlogState {
   blogs: Blog[];
+  blogDetail: Blog | null;
+  setBlogDetail: (blog: Blog) => void;
+  clearBlogDetail: () => void;
   selectedCategory: string;
 
   setSelectedCategory: (category: string) => void;
@@ -15,7 +18,14 @@ interface BlogState {
 
 const useBlogStore = create<BlogState>((set) => ({
   blogs: [],
+  blogDetail: null,
   selectedCategory: "All",
+
+  //set blog detail
+  setBlogDetail: (blog) => set({ blogDetail: blog }),
+
+  // clear blog detail
+  clearBlogDetail: () => set({ blogDetail: null }),
 
   // set blogs
   setBlogs: (blogs) => set({ blogs }),
@@ -24,7 +34,7 @@ const useBlogStore = create<BlogState>((set) => ({
   setSelectedCategory: (category) => set({ selectedCategory: category }),
 
   // add new blog
-  addBlog: (blog) => set((state) => ({ blogs: [...state.blogs, blog] })),
+  addBlog: (blog) => set((state) => ({ blogs: [blog, ...state.blogs] })),
 
   // update blog
   updateBlog: (blogId, updatedBlog) =>

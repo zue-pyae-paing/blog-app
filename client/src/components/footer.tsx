@@ -1,10 +1,15 @@
 import React from 'react'
+import Container from './container'
 
 type Props = {}
 
 const Footer = (props: Props) => {
-  return (
-    <div className=' absolute  bottom-0 mt-4'>Foter</div>
+  return ( 
+    <footer className=' p-4 bg-base-300'>
+      <Container>
+        <h1>footer</h1>
+      </Container>
+    </footer>
   )
 }
 

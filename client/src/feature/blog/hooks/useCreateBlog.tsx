@@ -45,6 +45,7 @@ const useCreateBlog = () => {
           toast.error(result.message || "Error fetching categories");
           return;
         }
+
         setCategories(result.data);
       } catch (error: any) {
         toast.error(error.message || "Error fetching categories");

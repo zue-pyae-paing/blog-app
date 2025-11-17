@@ -1,7 +1,8 @@
 import Tiptap from "./tip-tap";
 import { Controller } from "react-hook-form";
-import useCreateBlog from "../hooks/useCreateBlog";
 import { ImagePlus, Send } from "lucide-react";
+import useUpadeteBlog from "../hooks/useUpdateBlog";
+import useBlogStore from "../../../store/useBlogStore";
 
 const BlogEditForm = () => {
   const {
@@ -15,7 +16,7 @@ const BlogEditForm = () => {
     categories,
     imgInputRef,
     handleImageChange,
-  } = useCreateBlog();
+  } = useUpadeteBlog();
 
   return (
     <form className="relative space-y-3 p-6" onSubmit={handleSubmit(onSubmit)}>
@@ -149,7 +150,7 @@ const BlogEditForm = () => {
       <button
         disabled={isSubmitting}
         type="submit"
-        className="btn btn-accent absolute -bottom-6 right-6 flex items-center gap-2 text-white"
+        className="btn btn-accent md:btn-md btn-sm absolute -bottom-6 right-6 flex items-center gap-2 text-white"
       >
         <Send size={20} />
         {isSubmitting ? "Publishing..." : "Update Post"}

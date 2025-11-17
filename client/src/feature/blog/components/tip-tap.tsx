@@ -1,8 +1,11 @@
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect } from "react";
-import TipTapMenu from "./tip-tap-menu";
+import Heading from "@tiptap/extension-heading";
 import Placeholder from "@tiptap/extension-placeholder";
+import TipTapMenu from "./tip-tap-menu";
+import HightLight from "@tiptap/extension-highlight";
+
 
 interface TipTapEditorProps {
   value: string;
@@ -13,18 +16,21 @@ const Tiptap = ({ value, onChange }: TipTapEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: "Start writing your blog post here..." }),
+      Heading.configure({ levels: [1, 2, 3] }),
+      HightLight,
+      Placeholder.configure({
+        placeholder: "Start writing your blog post here...",
+      }),
     ],
     content: value,
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
+          "min-h-[200px] p-4 focus:outline-none prose prose-sm sm:prose lg:prose-lg max-w-none",
       },
     },
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
+      onChange(editor.getHTML());
     },
   });
 
@@ -32,10 +38,10 @@ const Tiptap = ({ value, onChange }: TipTapEditorProps) => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value);
     }
-  }, []);
+  }, [value]);
 
   return (
-    <div className="border rounded-lg p-3 min-h-[200px] prose max-w-none space-y-4">
+    <div className="border rounded-lg bg-base-100 shadow-sm">
       <TipTapMenu editor={editor} />
       <EditorContent editor={editor} />
     </div>

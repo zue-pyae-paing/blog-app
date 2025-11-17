@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const createBlogSchema = z.object({
-  title: z.string().trim().min(5, "Title must be at least 5 characters"),
+  title: z.string().trim().min(1, "Title must be at least 1 characters"),
   description: z
     .string()
     .trim()
@@ -21,4 +21,52 @@ export const createBlogSchema = z.object({
   category: z.string().trim().min(3, "Category must be at least 3 characters"),
 });
 
+
+export const updateBlogSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+
+  description: z
+    .string()
+    .trim()
+    .min(20, "Description must be at least 20 characters long")
+    .max(160, "Description must be 160 characters or less"),
+
+  image: z
+    .union([
+      z.string().url().optional(), 
+      z.instanceof(File).optional(), 
+      z.null().optional(), 
+    ])
+    .refine(
+      (value) => {
+        if (value instanceof File) {
+          return value.size <= 5 * 1024 * 1024; 
+        }
+        return true; 
+      },
+      { message: "Image must be smaller than 5MB" }
+    )
+    .refine(
+      (value) => {
+        if (value instanceof File) {
+          return ["image/jpeg", "image/png", "image/webp"].includes(value.type);
+        }
+        return true;
+      },
+      { message: "Only JPG, PNG, and WEBP formats are allowed" }
+    ),
+
+  content: z
+    .string()
+    .trim()
+    .min(20, "Content must be at least 20 characters long"),
+
+  category: z
+    .string()
+    .trim()
+    .min(3, "Category must be at least 3 characters"),
+});
+
+
 export type CreateBlogSchema = z.infer<typeof createBlogSchema>;
+export type UpddateBlogSchema = z.infer<typeof updateBlogSchema>;

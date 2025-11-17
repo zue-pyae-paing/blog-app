@@ -1,81 +1,67 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import useCommentStore from "../../../store/useCommentStore";
-import {
-  commentBaseApiUrl,
-  getAllComments,
-} from "../../../services/comment.service";
+import { getAllComments } from "../../../services/comment.service";
 import { useParams } from "react-router";
-import useInfiniteScroll from "react-infinite-scroll-hook";
 
 const useComment = () => {
+  const { blogId } = useParams<{ blogId: string | undefined }>();
+
   const comments = useCommentStore((state) => state.comments);
   const setComments = useCommentStore((state) => state.setComments);
 
-  const { blogId } = useParams<{ blogId: string }>();
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [totalComments, setTotalComments] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   const fetchComments = useCallback(
-    async (pageNum: number) => {
+    async (cursor: string | undefined = undefined) => {
       if (!blogId) return;
-      setLoading(true);
+
       try {
-        const response = await getAllComments(
-          `${commentBaseApiUrl}/${blogId}?page=${pageNum}`
-        );
-        const result = await response.json();
+        setLoading(true);
+        const res = await getAllComments(blogId, cursor);
+        const result = await res.json();
 
-        if (!response.ok || result.data.success === false) {
-          toast.error(
-            result.message || "Something went wrong while fetching comments"
-          );
-          return;
+        if (!res.ok || !result?.data?.success) {
+          throw new Error(result?.message || "Something went wrong");
         }
+        console.log(result,'fetch all messages response');
+        const newComments = result.data.comments || [];
+        const newCursor = result.data.nextCursor || null;
 
-        const newComments = result.data.comments;
-
-        if (pageNum === 1) {
-          setComments(newComments);
+        if (cursor) {
+          setComments([...newComments, ...comments]);
         } else {
-          setComments([...comments, ...newComments]);
+          setComments(newComments);
         }
-
-        setHasMore(pageNum < result.data.totalPages);
-        console.log(result.data.totalPages, "total pages");
-        console.log(result.data.totalComments,'total comments');
+        setTotalComments(result.data.totalComments);
+        setNextCursor(newCursor);
+        setHasMore(Boolean(newCursor));
       } catch (error: any) {
-        toast.error(error.message);
+        toast.error(error.message || "Failed to fetch comments");
       } finally {
         setLoading(false);
       }
     },
-    [blogId, comments, setComments]
+    [blogId, setComments]
   );
 
   useEffect(() => {
-    fetchComments(1);
-  }, [blogId]);
+    if (blogId) {
+      setNextCursor(null);
+      setHasMore(true);
+      fetchComments("");
+    }
+  }, [blogId, fetchComments, setComments]);
 
   const loadMore = useCallback(() => {
-    if (!loading && hasMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchComments(nextPage);
-    }
-  }, [page, hasMore, loading, fetchComments]);
+    if (loading || !hasMore || !nextCursor) return;
+    fetchComments(nextCursor);
+  }, [loading, hasMore, nextCursor, fetchComments]);
 
-  // ✅ useInfiniteScroll hook
-  const [sentryRef] = useInfiniteScroll({
-    loading,
-    hasNextPage: hasMore,
-    onLoadMore: loadMore,
-    disabled: !hasMore,
-    rootMargin: "0px 0px 200px 0px",
-  });
-
-  return { comments, loading, hasMore, sentryRef };
+  return { comments, loading, hasMore, loadMore, totalComments };
 };
 
 export default useComment;

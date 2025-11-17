@@ -10,7 +10,7 @@ const CategoriesBar = ({ categories }: { categories: string[] }) => {
   }, [selected]);
 
   return (
-    <div className=" flex flex-wrap gap-2 overflow-y-auto w-full scrrollbar-hide h-40">
+    <div className=" flex flex-wrap gap-2 overflow-y-auto w-full scrrollbar-hide lg:h-40 md:h-auto">
       <button
         className={`btn btn-sm btn-soft w-fit ${
           selected === "All" ? "btn-primary" : "btn-secondary"

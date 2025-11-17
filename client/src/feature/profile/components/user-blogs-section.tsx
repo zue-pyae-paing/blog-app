@@ -1,19 +1,30 @@
+import { Link } from "react-router";
 import useOwnBlog from "../hooks/useOwnBlog";
 import OwnBlogLists from "./own-blog-lists";
 
 const UserOwnBlogsSection = () => {
-  const { handleBlogs, loading, ownBlogs, selected, handlePublishBlog } =
-    useOwnBlog();
+  const {
+    handleBlogs,
+    isDeleteLoading,
+    isPublishLoading,
+    ownBlogs,
+    selected,
+    handleLoadMore,
+    handlePublishBlog,
+    handleDeleteBlog,
+    hasMore,
+    totalBlogs,
+  } = useOwnBlog();
 
   return (
-    <section>
+    <section className=" relative">
       <div className=" flex items-center justify-between">
         <h2 className=" font-bold text-xl md:text-2xl text-primary">
           My Blog Posts
         </h2>
-        <button className=" btn btn-primary  btn-sm">New Post</button>
+        <Link to={'/create'} className=" btn btn-primary  btn-sm">New Post</Link>
       </div>
-      <div className=" space-x-4 py-4 border-b">
+      <div className="  space-x-4 py-4 border-b">
         <button
           className={` ${
             selected === "all" ? "btn-primary" : "btn-secondary"
@@ -44,10 +55,16 @@ const UserOwnBlogsSection = () => {
           Draft
         </button>
       </div>
+
       <OwnBlogLists
-        loading={loading}
         ownBlogs={ownBlogs}
-        handlePublishBlog={handlePublishBlog}
+        onPublish={handlePublishBlog}
+        onDelete={handleDeleteBlog}
+        isDeleteLoading={isDeleteLoading}
+        isPublishLoading={isPublishLoading}
+        hasMore={hasMore}
+        handleLoadMore={handleLoadMore}
+        totalBlogs={totalBlogs}
       />
     </section>
   );

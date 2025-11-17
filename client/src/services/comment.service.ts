@@ -1,12 +1,13 @@
-import type { BlogComment ,UpdateBlogComment} from "../types/comment";
+import type { BlogComment, UpdateBlogComment } from "../types/comment";
 import useAccountStore from "../store/useAccountStore";
 import { getHeaders } from "../utils/getHeaders";
 
-
 export const commentBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/comments";
 
-export const getAllComments = async (url: string) => {
-  return await fetch(url, { method: "GET" });
+export const getAllComments = async (blogId: string, cursor: string = "") => {
+  return await fetch(`${commentBaseApiUrl}/${blogId}?cursor=${cursor}`, {
+    method: "GET",
+  });
 };
 
 export const sendComment = async (data: BlogComment) => {
@@ -26,14 +27,17 @@ export const getComment = async (blogId: string, cmtId: string) => {
     headers: getHeaders(),
   });
 };
-export const updateComment = async (data:UpdateBlogComment) => {
+export const updateComment = async (data: UpdateBlogComment) => {
   return await fetch(`${commentBaseApiUrl}/edit/${data.blogId}/${data.cmtId}`, {
     method: "PUT",
     headers: getHeaders(),
     body: JSON.stringify({ content: data.content }),
   });
 };
-export const deleteComment = async (blogId: string|undefined, cmtId: string) => {
+export const deleteComment = async (
+  blogId: string | undefined,
+  cmtId: string
+) => {
   return await fetch(`${commentBaseApiUrl}/delete/${blogId}/${cmtId}`, {
     method: "DELETE",
     headers: getHeaders(),

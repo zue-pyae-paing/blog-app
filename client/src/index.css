@@ -18,3 +18,16 @@
   height: 0;
   pointer-events: none;
 }
+.prose code{
+  @apply bg-primary-content
+}
+.prose h1 {
+  @apply lg:text-4xl font-bold md:text-3xl text-2xl
+}
+.prose h2 {
+ @apply lg:text-3xl font-bold md:text-2xl text-xl
+}
+.prose h3 {
+  @apply lg:text-2xl font-bold md:text-xl text-lg
+}
+

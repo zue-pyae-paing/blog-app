@@ -5,7 +5,7 @@ import BlogCreateForm from "../components/blog-create-form";
 
 const BlogCreatePage = () => {
   return (
-    <Container>
+    <Container className=" mt-20">
       <Breadcrumb />
       <div className="  flex items-center justify-center flex-col gap-y-3" >
         <h1 className=" font-bold text-primary text-4xl">Create New Blog</h1>

@@ -65,13 +65,14 @@ export const getSingleBlog = async (req, res, next) => {
 export const getOwnBlogs = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { limit, cursor } = req.query;
+    const { limit, cursor, status } = req.query;
 
-    const { blogs, nextCursor, totalBlogs } =
+    const { blogs, nextCursor, totalBlogs, hasMore } =
       await blogService.getOwnBlogs(
         userId,
         parseInt(limit) || 10,
-        cursor || null
+        cursor || null,
+        status
       );
 
     res.status(200).json({
@@ -80,7 +81,7 @@ export const getOwnBlogs = async (req, res, next) => {
         blogs,
         nextCursor,
         totalBlogs,
-        
+        hasMore,
       },
     });
   } catch (error) {
