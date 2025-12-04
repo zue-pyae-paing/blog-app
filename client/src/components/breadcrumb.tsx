@@ -9,7 +9,6 @@ interface BreadcrumbProps {
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ separator = " / " }) => {
   const location = useLocation();
 
-  console.log(location.pathname);
 
 
   const pathnames = location.pathname.split("/").filter((x) => x);

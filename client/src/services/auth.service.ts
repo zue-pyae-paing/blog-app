@@ -13,6 +13,7 @@ export const login = (data: LoginSchema) => {
 };
 
 export const registerapi =  (data: RegisterSchema) => {
+  console.log("env value", import.meta.env.VITE_SERVER_URI)
   return  fetch(import.meta.env.VITE_SERVER_URI + "/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

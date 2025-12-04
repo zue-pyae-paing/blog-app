@@ -4,16 +4,22 @@ import CategoriesBar from "../../../components/categories-bar";
 import { useEffect, useState } from "react";
 import { getCategory } from "../../../services/auth.service";
 
+ export interface Category {
+  _id?: string;
+  name: string;
+  slug: string;
+}
+
 const BlogFilter = () => {
   const { searchRef, handleSearchInput, clearSearchInput } = useBlog();
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const fetchCategories = async () => {
     try {
       const response = await getCategory();
-      const data = await response.json();
-      setCategories(data.data);
-      console.log("after fatching data", data.data);
+      const { data } = await response.json();
+      setCategories(data.categories);
+      console.log(data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }

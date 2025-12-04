@@ -1,5 +1,5 @@
 import useAccountStore from "../store/useAccountStore";
-import { getHeaders } from "../utils/getHeaders";
+
 
 export const blogBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/blogs";
 

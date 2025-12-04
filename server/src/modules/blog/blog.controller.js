@@ -100,8 +100,8 @@ export const getTrendingBlogs = async (req, res, next) => {
 
 export const getCategories = async (req, res, next) => {
   try {
-    const categories = await blogService.getCategories();
-    res.status(200).json({ success: true, data: categories });
+    const categories  = await blogService.getCategories();
+    res.status(200).json({ data: { success: true, categories } });
   } catch (error) {
     next(error);
   }

@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import ThemeBtn from "./theme-btn";
 import { checkIsAuthorized } from "../utils/isAuthorize";
+import { checkAdmin } from "../utils/checkAdmin";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
   const isAuthorized = checkIsAuthorized();
+  const isAdmin = checkAdmin();
 
   return (
     <nav className="  w-full fixed h-20  top-0 z-10 bg-base-200 ">
@@ -49,6 +51,15 @@ const Navbar = () => {
             >
               About
             </NavLink>
+            {isAdmin && isAuthorized && (
+              <NavLink
+                to="/dashboard"
+                className="btn btn-primary btn-sm"
+                onClick={() => setShow(false)}
+              >
+                Admin
+              </NavLink>
+            )}
             {isAuthorized ? (
               <>
                 <NavLink

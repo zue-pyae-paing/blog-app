@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { registerapi } from "../../../services/auth.service";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 const useRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -20,14 +21,14 @@ const useRegister = () => {
   const onSubmit = async (data: RegisterSchema) => {
     try {
       const response = await registerapi(data);
+      console.log(response,"response")
       const result = await response.json();
-      console.log(result.data);
-      if (!result.data.success) {
-        throw new Error(result.message);
+      console.log(result, "register api response");
+      if (result.ok === false) {
+        throw toast.error(result.message || "Registration failed");
       }
       navigate("/login");
       reset();
-      console.log(data);
     } catch (error) {
       console.error("Error registering:", error);
     }

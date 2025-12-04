@@ -31,7 +31,7 @@ const OwnBlogItem = ({
     title,
     description,
     image,
-    category,
+    categoryId,
     createdAt,
     readingTime,
     status,
@@ -51,7 +51,7 @@ const OwnBlogItem = ({
 
       <div className="relative flex-1 flex-col flex justify-evenly p-3 gap-3">
         <div className="space-x-3">
-          <span className="badge badge-soft badge-primary">{category}</span>
+          <span className="badge badge-soft badge-primary">{categoryId?.name}</span>
           <span
             className={`badge badge-soft ${
               status === "publish" ? "badge-success" : "badge-warning"

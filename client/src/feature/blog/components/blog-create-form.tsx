@@ -111,17 +111,17 @@ const BlogCreateForm = () => {
           </p>
           <select
             className="select select-neutral mt-4 w-full border border-base-300"
-            {...register("category")}
+            {...register("categoryId",)}
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat} className="capitalize">
-                {cat}
+              <option key={cat._id} value={cat._id} className="capitalize">
+                {cat.name}
               </option>
             ))}
           </select>
-          {errors.category && (
-            <p className=" text-sm text-red-500">{errors.category?.message}</p>
+          {errors.categoryId && (
+            <p className=" text-sm text-red-500">{errors.categoryId?.message}</p>
           )}
         </div>
       </div>

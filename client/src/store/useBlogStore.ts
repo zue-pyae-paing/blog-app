@@ -13,7 +13,7 @@ interface BlogState {
   addBlog: (blog: Blog) => void;
   updateBlog: (blogId: string, updatedBlog: Blog) => void;
   deleteBlog: (blogId: string) => void;
-  likeBlog: (blogId: string, userId: string) => void;
+ 
 }
 
 const useBlogStore = create<BlogState>((set) => ({
@@ -48,22 +48,7 @@ const useBlogStore = create<BlogState>((set) => ({
   deleteBlog: (blogId) =>
     set((state) => ({
       blogs: state.blogs.filter((blog) => blog._id !== blogId),
-    })),
-
-  // like blog
-  likeBlog: (blogId, userId) =>
-    set((state) => ({
-      blogs: state.blogs.map((blog) =>
-        blog._id === blogId
-          ? {
-              ...blog,
-              likes: blog.likes.includes(userId)
-                ? blog.likes.filter((id) => id !== userId)
-                : [...blog.likes, userId],
-            }
-          : blog
-      ),
-    })),
+    }))
 }));
 
 export default useBlogStore;

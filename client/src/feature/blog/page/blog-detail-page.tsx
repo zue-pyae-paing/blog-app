@@ -18,7 +18,7 @@ const BlogDetailPage = () => {
       <div className=" flex items-center gap-x-2">
         <div className=" flex items-center gap-x-1">
           <TagIcon size={16} />
-          <span className="text-secondary">{blog?.category}</span>
+          <span className="text-secondary">{blog?.categoryId.name}</span>
         </div>
         <Dot />
         <div className=" flex items-center gap-x-1">

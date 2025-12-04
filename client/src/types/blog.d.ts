@@ -1,3 +1,4 @@
+import type { Category } from "../feature/blog/components/blog-filter";
 import type { Comment } from "./comment";
 export interface Blog {
   _id: string;
@@ -8,7 +9,8 @@ export interface Blog {
   content: string;
   status?: string;
   readingTime: number;
-  category: string;
+  categoryId: Category;
+  categorySlug: string;
   comments: Comment[];
   views: number;
   likes: string[];

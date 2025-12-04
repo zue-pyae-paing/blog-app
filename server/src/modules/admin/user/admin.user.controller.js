@@ -5,7 +5,14 @@ export const getAllUser = async (req, res, next) => {
     const { id } = req.user;
     const { limit, page, search, status, sortBy, sortStatus } = req.query;
 
-    const users = await adminUserService.getAllUser(
+    const {
+      users,
+      totalPages,
+      totalUsers,
+      currentPage,
+      hasNextPage,
+      hasPreviousPage,
+    } = await adminUserService.getAllUser(
       id,
       limit,
       page,
@@ -14,7 +21,19 @@ export const getAllUser = async (req, res, next) => {
       sortBy,
       sortStatus
     );
-    res.status(200).json({ data: { success: true, users } });
+    res
+      .status(200)
+      .json({
+        data: {
+          success: true,
+          users,
+          totalPages,
+          totalUsers,
+          currentPage,
+          hasNextPage,
+          hasPreviousPage,
+        },
+      });
   } catch (error) {
     next(error);
   }
@@ -52,3 +71,15 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getUserGrowth = async (req,res,next)=>{
+  try {
+    const {id}=req.user;
+    const {range}=req.query;
+    const growthData=await adminUserService.getUserGrowth(id,range);
+    res.status(200).json({data:{success:true,growthData}});
+  } catch (error) {
+    next(error);
+  }
+}

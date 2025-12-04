@@ -10,10 +10,11 @@ import { createBlog } from "../../../services/blog.service";
 import { getCategory } from "../../../services/auth.service";
 import { useNavigate } from "react-router";
 import useBlogStore from "../../../store/useBlogStore";
+import type { Category } from "../components/blog-filter";
 
 const useCreateBlog = () => {
   const [preview, setPreview] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const navigator = useNavigate();
   const addBlog = useBlogStore((state) => state.addBlog);
@@ -46,7 +47,7 @@ const useCreateBlog = () => {
           return;
         }
 
-        setCategories(result.data);
+        setCategories(result.data.categories);
       } catch (error: any) {
         toast.error(error.message || "Error fetching categories");
       }
@@ -61,7 +62,7 @@ const useCreateBlog = () => {
     if (data.image) formData.append("image", data.image);
     formData.append("description", data.description);
     formData.append("content", data.content);
-    formData.append("category", data.category);
+    formData.append("categoryId", data.categoryId);
 
     try {
       const response = await createBlog(formData);
@@ -75,7 +76,7 @@ const useCreateBlog = () => {
       addBlog(result.data.newBlog);
       setPreview("");
       reset();
-      navigator("/blog");
+      navigator("/profile");
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     }

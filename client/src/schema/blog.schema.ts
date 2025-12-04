@@ -18,9 +18,11 @@ export const createBlogSchema = z.object({
       "Only .jpg, .jpeg, .png and .webp formats are supported"
     ),
   content: z.string().trim().min(20, "Content must be at least 20 characters"),
-  category: z.string().trim().min(3, "Category must be at least 3 characters"),
+  categoryId: z
+    .string()
+    .trim()
+    .min(3, "Category must be at least 3 characters"),
 });
-
 
 export const updateBlogSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -33,16 +35,16 @@ export const updateBlogSchema = z.object({
 
   image: z
     .union([
-      z.string().url().optional(), 
-      z.instanceof(File).optional(), 
-      z.null().optional(), 
+      z.string().url().optional(),
+      z.instanceof(File).optional(),
+      z.null().optional(),
     ])
     .refine(
       (value) => {
         if (value instanceof File) {
-          return value.size <= 5 * 1024 * 1024; 
+          return value.size <= 5 * 1024 * 1024;
         }
-        return true; 
+        return true;
       },
       { message: "Image must be smaller than 5MB" }
     )
@@ -61,12 +63,13 @@ export const updateBlogSchema = z.object({
     .trim()
     .min(20, "Content must be at least 20 characters long"),
 
-  category: z
-    .string()
-    .trim()
-    .min(3, "Category must be at least 3 characters"),
+  categoryId: z.string().trim(),
 });
 
+export const createCategorySchema = z.object({
+  name: z.string().trim().min(3, "Category name must be at least 3 characters"),
+});
 
 export type CreateBlogSchema = z.infer<typeof createBlogSchema>;
 export type UpddateBlogSchema = z.infer<typeof updateBlogSchema>;
+export type CreateCategorySchema = z.infer<typeof createCategorySchema>;

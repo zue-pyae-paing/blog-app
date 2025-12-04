@@ -23,6 +23,7 @@ const useBlogDetail = () => {
       }
 
       setBlogDetail(result.data.blog);
+      console.log(result.data.blog,'detail blog')
     } catch (error: any) {
       toast.error(error.message);
     } finally {

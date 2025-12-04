@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import connectDB from "./config/db.js";
 import authRouter from "./modules/auth/auth.route.js";
-import adminRouter from "./modules/admin/admin.user.routes.js"
+import adminRouter from "./modules/admin/admin.route.js"
 import userRouter from "./modules/user/user.route.js";
 import blogRouter from "./modules/blog/blog.route.js";
 import commentRouter from "./modules/comment/comment.route.js";
@@ -28,7 +28,7 @@ app.use(cookieParser());
 connectDB();
 
 // routes
-app.get("/", (req, res) => res.send("Hello World!"));
+app.get("/", (req, res) => res.send("Welcome to Blog App"));
 app.use("/api/auth", authRouter);
 app.use('/api/admin',adminRouter)
 app.use("/api/user", userRouter);

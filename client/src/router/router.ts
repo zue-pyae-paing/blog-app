@@ -15,6 +15,11 @@ import ForgotPasswordPage from "../feature/auth/page/forgot-password-page";
 import ResetPasswordPage from "../feature/auth/page/reset-password-page";
 import SettingPage from "../feature/profile/page/setting-page";
 import { protectLoader } from "../utils/protectLoader";
+import AdminDashboardLayout from "../layout/admin-dashbord-layout";
+import DashboardPage from "../feature/dashboard/pages/dashboard-page";
+import UserManagePage from "../feature/dashboard/pages/user-manage-page";
+import BlogManagePage from "../feature/dashboard/pages/blog-manage-page";
+import CategoryManagePage from "../feature/dashboard/pages/category-manage-page";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +45,7 @@ const router = createBrowserRouter([
         loader: protectLoader,
         Component: ProfilePage,
       },
+
       {
         path: "setting",
         loader: protectLoader,
@@ -54,6 +60,21 @@ const router = createBrowserRouter([
       { path: "blog/:blogId", Component: BlogDetailPage },
     ],
   },
+  {
+    path: "dashboard",
+    loader: protectLoader,
+    Component: AdminDashboardLayout,
+    children: [
+      { index: true, Component: DashboardPage },
+      {
+        path: "user-manage",
+        Component: UserManagePage,
+      },
+      { path: "blog-manage", Component: BlogManagePage },
+      { path: "category-manage", Component: CategoryManagePage },
+    ],
+  },
+
   {
     path: "/login",
     Component: LoginPage,

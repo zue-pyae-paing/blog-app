@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import useBlog from "../feature/home/hooks/useBlog";
+import type { Category } from "../feature/blog/components/blog-filter";
 
-const CategoriesBar = ({ categories }: { categories: string[] }) => {
+const CategoriesBar = ({ categories }: { categories: Category[] }) => {
+  console.log(categories,'categories var')
   const [selected, setSelected] = useState<string>("All");
   const { handleCategoryChange } = useBlog();
 
@@ -22,13 +24,13 @@ const CategoriesBar = ({ categories }: { categories: string[] }) => {
 
       {categories.map((category) => (
         <button
-          key={category}
+          key={category.slug}
           className={`btn btn-sm btn-soft capitalize w-fit ${
-            selected === category ? "btn-primary" : "btn-secondary"
+            selected === category.name ? "btn-primary" : "btn-secondary"
           }`}
-          onClick={() => setSelected(category)}
+          onClick={() => setSelected(category.slug)}
         >
-          {category}
+          {category.name}
         </button>
       ))}
     </div>

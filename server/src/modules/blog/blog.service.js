@@ -1,21 +1,26 @@
 import Blog from "../../model/blog.model.js";
 import Comment from "../../model/comment.model.js";
+import Category from "../../model/category.model.js";
 import { imagekit } from "../../utils/imageKit.js";
 import createError from "http-errors";
 
 const blogService = {
   // Get all blogs with pagination
-  getAllBlogs: async (page, limit, category, search) => {
-    if (!page || !limit) throw new Error;
+  getAllBlogs: async (page, limit, search, category) => {
+    if (!page || !limit)
+      throw createError.BadRequest("Page and limit are required");
     const filter = { status: "publish" };
-    if (category) filter.category = category;
+
     if (search) filter.title = { $regex: search, $options: "i" };
+
+    if (category) filter.categorySlug = { $regex: category, $options: "i" };
     const blogs = await Blog.find(filter)
       .select("-content -imageId -comments -likes")
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 })
       .populate("author", "username avatar email")
+      .populate("categoryId", "name slug")
       .lean();
     const totalBlogs = await Blog.countDocuments(filter);
     const totalPages = Math.ceil(totalBlogs / limit);
@@ -23,20 +28,21 @@ const blogService = {
   },
   // Get single blog
   getSingleBlog: async (blogId) => {
-    if (!blogId) throw new Error("Blog ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
     const blog = await Blog.findById(blogId)
       .select("-imageId ")
       .populate("author", "username avatar email")
+      .populate("categoryId", "name slug")
       .populate({
         path: "comments",
         populate: { path: "author", select: "username avatar " },
       })
       .lean();
-    if (!blog) throw new Error("Blog not found");
+    if (!blog) throw createError.NotFound("Blog not found");
     return blog;
   },
   getOwnBlogs: async (userId, limit = 10, cursor = null, status = "") => {
-    if (!userId) throw new Error("User ID is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
 
     const filter = { author: userId };
 
@@ -50,6 +56,7 @@ const blogService = {
 
     const blogs = await Blog.find(filter)
       .select("-imageId -content -comments -likes")
+      .populate("categoryId", "name slug")
       .sort({ _id: -1 })
       .limit(limit)
       .lean();
@@ -74,14 +81,14 @@ const blogService = {
     return blogs;
   },
   getCategories: async () => {
-    const categories = await Blog.distinct("category");
+    const categories = await Category.find().lean();
     return categories;
   },
   // Create blog
   createBlog: async (userId, blog, file) => {
-    if (!file) throw new Error("Image is required");
-    if (!blog) throw new Error("Blog is required");
-    if (!userId) throw new Error("User ID is required");
+    if (!file) throw createError.BadRequest("File is required");
+    if (!blog) throw createError.BadRequest("Blog is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
 
     const uploaded = await imagekit.upload({
       file: file.buffer,
@@ -90,15 +97,22 @@ const blogService = {
     });
 
     if (!uploaded || uploaded.error) {
-      throw new Error(uploaded?.error?.message || "ImageKit upload failed");
+      throw createError.InternalServerError(
+        uploaded?.error?.message || "ImageKit upload failed"
+      );
     }
     const words = blog.content?.split(/\s+/).length || 0;
     const readingTime = Math.ceil(words / 200);
+
+    const categorySlug = await Category.findOne({ _id: blog.categoryId });
+    if (!categorySlug) throw createError.BadRequest("Category not found");
 
     const newBlogData = {
       ...blog,
       image: uploaded.url,
       imageId: uploaded.fileId,
+      categoryId: blog.categoryId,
+      categorySlug: categorySlug.slug,
       author: userId,
       readingTime,
     };
@@ -108,13 +122,15 @@ const blogService = {
   },
   // Update blog
   updateBlog: async (userId, blogId, blog, file) => {
-    if (!blogId) throw new Error("Blog ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
 
     const blogToUpdate = await Blog.findById(blogId);
-    if (!blogToUpdate) throw new Error("Blog not found");
+    if (!blogToUpdate) throw createError.NotFound("Blog not found");
 
     if (blogToUpdate.author.toString() !== userId.toString()) {
-      throw new Error("You are not authorized to update this blog");
+      throw createError.Unauthorized(
+        "You are not authorized to update this blog"
+      );
     }
 
     if (file) {
@@ -127,28 +143,38 @@ const blogService = {
         });
 
         if (!uploaded || uploaded.error) {
-          throw new Error(uploaded?.error?.message || "ImageKit upload failed");
+          throw createError.InternalServerError(
+            uploaded?.error?.message || "ImageKit upload failed"
+          );
         }
 
         if (blogToUpdate.imageId) {
           try {
             await imagekit.deleteFile(blogToUpdate.imageId);
           } catch (err) {
-            console.error("Failed to delete old image:", err.message);
+            throw createError.InternalServerError("ImageKit delete failed");
           }
         }
 
         blogToUpdate.image = uploaded.url;
         blogToUpdate.imageId = uploaded.fileId;
       } catch (err) {
-        throw new Error("Image upload failed: " + err.message);
+        throw createError.InternalServerError("ImageKit upload failed");
       }
     }
 
     if (blog.title) blogToUpdate.title = blog.title;
     if (blog.content) blogToUpdate.content = blog.content;
-    if (blog.category) blogToUpdate.category = blog.category;
-    if (blog.tags) blogToUpdate.tags = blog.tags;
+    if (blog.categoryId) blogToUpdate.categoryId = blog.categoryId;
+    if (
+      blog.categoryId &&
+      blogToUpdate.categoryId.toString() !== blog.categoryId.toString()
+    ) {
+      const category = await Category.findById(blog.categoryId);
+      if (!category) throw createError.BadRequest("Category not found");
+      blogToUpdate.categorySlug = category.slug;
+    }
+
     if (blog.description) blogToUpdate.description = blog.description;
 
     const updatedBlog = await blogToUpdate.save();
@@ -156,18 +182,22 @@ const blogService = {
   },
   // Delete blog
   deleteBlog: async (userId, blogId) => {
-    if (!blogId) throw new Error("Blog ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
     const blog = await Blog.findById(blogId);
-    if (!blog) throw new Error("Blog not found");
+    if (!blog) throw createError.NotFound("Blog not found");
 
     if (blog.author.toString() !== userId)
-      throw new Error("You are not authorized to delete this blog");
+      throw createError.Unauthorized(
+        "You are not authorized to delete this blog"
+      );
 
     if (blog.imageId) {
       try {
         await imagekit.deleteFile(blog.imageId);
       } catch (error) {
-        throw new Error("Error deleting image from ImageKit");
+        throw createError.InternalServerError(
+          "Failed to delete blog image from ImageKit"
+        );
       }
     }
     await Comment.deleteMany({ blogId });
@@ -176,32 +206,34 @@ const blogService = {
   },
   // Like blog
   likeBlog: async (userId, blogId) => {
-    if (!userId) throw new Error("User ID is required");
-    if (!blogId) throw new Error("Blog ID is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
     const blog = await Blog.findById(blogId);
-    if (!blog) throw new Error("Blog not found");
+    if (!blog) throw createError.NotFound("Blog not found");
     blog.likes.push(userId);
     await blog.save();
     return blog;
   },
   // Unlike blog
   unlikeBlog: async (userId, blogId) => {
-    if (!userId) throw new Error("User ID is required");
-    if (!blogId) throw new Error("Blog ID is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
     const blog = await Blog.findById(blogId);
-    if (!blog) throw new Error("Blog not found");
+    if (!blog) throw createError.NotFound("Blog not found");
     blog.likes.pull(userId);
     await blog.save();
     return blog;
   },
   // Publish Blog
   publishBlog: async (blogId, userId) => {
-    if (!blogId) throw new Error("Blog ID is required");
-    if (!userId) throw new Error("User ID is required");
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
     const blog = await Blog.findById(blogId);
-    if (!blog) throw new Error("Blog not found");
+    if (!blog) throw createError.NotFound("Blog not found");
     if (blog.author.toString() !== userId)
-      throw new Error("You are not authorized to publish this blog");
+      throw createError.Unauthorized(
+        "You are not authorized to publish this blog"
+      );
     blog.status = "publish";
     await blog.save();
     return blog;

@@ -2,8 +2,8 @@ import { blogBaseApiUrl } from "../../../services/blog.service";
 import { useState, useEffect, useRef } from "react";
 import useBlogStore from "../../../store/useBlogStore";
 import { useSearchParams } from "react-router";
-
-interface Pagination {
+import {toast} from "react-toastify";
+export interface Pagination {
   currentPage: number;
   nextPage: number | null;
   previousPage: number | null;
@@ -77,12 +77,17 @@ const useBlog = () => {
     updateUrlParams({ search: undefined, page: "1" });
   };
 
+
+
  
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
         const res = await fetch(fetchUrl);
+    if(!res.ok){
+      toast.error("Failed to fetch blogs");
+    }
         const { data } = await res.json();
         setBlogs(data.blogs || []);
         setLinks(data.links || []);
