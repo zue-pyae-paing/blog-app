@@ -1,7 +1,8 @@
 import useAccountStore from "../store/useAccountStore";
 
 export const apiWrapper = async (url: string, options: RequestInit = {}) => {
-  const { accessToken, refreshToken, setTokens, logout } = useAccountStore.getState();
+  const { accessToken, refreshToken, setTokens, logout } =
+    useAccountStore.getState();
 
   const headers = {
     ...(options.headers || {}),
@@ -10,13 +11,15 @@ export const apiWrapper = async (url: string, options: RequestInit = {}) => {
 
   const response = await fetch(url, { ...options, headers });
 
-  
   if (response.status === 401) {
-    const refreshRes = await fetch(import.meta.env.VITE_SERVER_URI + "/auth/refresh", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
-    });
+    const refreshRes = await fetch(
+      import.meta.env.VITE_SERVER_URI + "/auth/refresh-token",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      }
+    );
 
     if (!refreshRes.ok) {
       logout();
