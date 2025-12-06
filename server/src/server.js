@@ -38,8 +38,8 @@ app.use("/api/comments", commentRouter);
 //error middleware
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server is running on port ${process.env.PORT}`)
-);
+// app.listen(process.env.PORT, () =>
+//   console.log(`Server is running on port ${process.env.PORT}`)
+// );
 
 export default app;
