@@ -9,7 +9,7 @@ export interface Blog {
   content: string;
   status?: string;
   readingTime: number;
-  categoryId: Category;
+  categoryId: Category ;
   categorySlug: string;
   comments: Comment[];
   views: number;
@@ -37,4 +37,23 @@ export interface Pagination {
   previousPage: number | null;
   totalBlogs: number;
   totalPages: number;
+}
+
+export interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+}
+
+export interface AdminCategory extends Category {
+  value: number;
+}
+
+export interface  AdminPaginationMeta {
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
 }

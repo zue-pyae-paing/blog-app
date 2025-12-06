@@ -4,9 +4,10 @@ import type { User } from "../types/user";
 
 interface AccountState {
   accessToken: string;
+  refreshToken: string;
   account: User;
   setAccount: (account: User) => void;
-  setAccessToken: (accessToken: string) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
   removeAccount: () => void;
   logout: () => void;
 }
@@ -14,11 +15,12 @@ const useAccountStore = create<AccountState>()(
   persist(
     (set) => ({
       accessToken: "",
+      refreshToken: "",
       account: {} as User,
+      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
       setAccount: (accountData) => set({ account: accountData }),
-      setAccessToken: (accessToken) => set({  accessToken }),
       removeAccount: () => set({ account: {} as User }),
-      logout: () => set({ accessToken: "", account: {} as User }),
+      logout: () => set({ accessToken: "", refreshToken: "", account: {} as User }),
     }),
     {
       name: "account-storage",

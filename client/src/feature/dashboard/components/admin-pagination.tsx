@@ -4,21 +4,24 @@ const AdminPagination = ({
   totalPages,
   currentPage,
   handlePageChange,
-  hasPreviousPage,
+  hasPrevPage,
   hasNextPage,
 }: {
   totalPages: number;
   currentPage: number;
-  hasPreviousPage: boolean;
+  hasPrevPage
+: boolean;
   hasNextPage: boolean;
   handlePageChange: (page: number) => void;
 }) => {
+ 
+  console.log(totalPages,currentPage,hasPrevPage,hasNextPage,"this is pagination")
   return (
     <div className="join">
       <button
         className=" join-item btn btn-sm"
         onClick={() => handlePageChange(currentPage - 1)}
-        disabled={!hasPreviousPage}
+        disabled={!hasPrevPage}
       >
         <ChevronsLeftIcon className="h-5 w-5" />
       </button>

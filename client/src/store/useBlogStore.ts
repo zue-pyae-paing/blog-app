@@ -7,13 +7,11 @@ interface BlogState {
   setBlogDetail: (blog: Blog) => void;
   clearBlogDetail: () => void;
   selectedCategory: string;
-
   setSelectedCategory: (category: string) => void;
   setBlogs: (blogs: Blog[]) => void;
   addBlog: (blog: Blog) => void;
   updateBlog: (blogId: string, updatedBlog: Blog) => void;
   deleteBlog: (blogId: string) => void;
- 
 }
 
 const useBlogStore = create<BlogState>((set) => ({
@@ -21,22 +19,16 @@ const useBlogStore = create<BlogState>((set) => ({
   blogDetail: null,
   selectedCategory: "All",
 
-  //set blog detail
   setBlogDetail: (blog) => set({ blogDetail: blog }),
 
-  // clear blog detail
   clearBlogDetail: () => set({ blogDetail: null }),
 
-  // set blogs
   setBlogs: (blogs) => set({ blogs }),
 
-  // select category
   setSelectedCategory: (category) => set({ selectedCategory: category }),
 
-  // add new blog
   addBlog: (blog) => set((state) => ({ blogs: [blog, ...state.blogs] })),
 
-  // update blog
   updateBlog: (blogId, updatedBlog) =>
     set((state) => ({
       blogs: state.blogs.map((blog) =>
@@ -44,11 +36,10 @@ const useBlogStore = create<BlogState>((set) => ({
       ),
     })),
 
-  // delete blog
   deleteBlog: (blogId) =>
     set((state) => ({
       blogs: state.blogs.filter((blog) => blog._id !== blogId),
-    }))
+    })),
 }));
 
 export default useBlogStore;

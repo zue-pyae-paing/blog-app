@@ -11,14 +11,17 @@ import {  useNavigate } from "react-router";
 import useBlogDetail from "./useBlogDetail";
 import { updateBlogSchema, type UpddateBlogSchema } from "../../../schema/blog.schema";
 
+
 const useUpdateBlog = () => {
   useBlogDetail();
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const blog = useBlogStore((state) => state.blogDetail);
+
+ 
 
   const {
     register,
@@ -33,7 +36,7 @@ const useUpdateBlog = () => {
       title: "",
       description: "",
       content: "",
-      category: "",
+      categoryId: "",
       image: undefined,
     },
   });
@@ -51,7 +54,7 @@ const useUpdateBlog = () => {
     },
   });
 
-  // old data ကို form ထဲထည့်
+  
   useEffect(() => {
     if (blog && editor) {
       editor?.commands.setContent(blog?.content || "");
@@ -59,7 +62,7 @@ const useUpdateBlog = () => {
         title: blog.title,
         description: blog.description,
         content: blog.content,
-        category: blog.category,
+        categoryId: blog.categoryId.name,
         image: undefined,
       });
       setPreview(blog.image || null);
@@ -74,7 +77,8 @@ const useUpdateBlog = () => {
         const result = await res.json();
         if (!res.ok)
           throw new Error(result.message || "Failed to fetch categories");
-        setCategories(result.data);
+    
+        setCategories(result.data.categories);
       } catch (err: any) {
         toast.error(err.message);
       }
@@ -90,14 +94,13 @@ const useUpdateBlog = () => {
   };
 
   const onSubmit = async (data: UpddateBlogSchema) => {
-    console.log( data,'submmit update blog')
     if (!blog?._id) return toast.error("No blog ID found");
     const formData = new FormData();
     formData.append("title", data.title);
     if (data.image) formData.append("image", data.image);
     formData.append("description", data.description);
     formData.append("content", data.content);
-    formData.append("category", data.category);
+    formData.append("categoryId", data.categoryId);
 
     try {
       const res = await updateBlog(blog._id, formData);

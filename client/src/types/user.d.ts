@@ -6,7 +6,11 @@ export interface User {
   avatar?: string;
   avatarId?: string;
   role: string;
+  status: string;
   createdAt: string;
   refreshToken?: string;
 }
 
+export interface AdminUser extends User {
+  totalBlogs: number;
+}

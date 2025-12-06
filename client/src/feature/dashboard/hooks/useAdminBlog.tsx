@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import useAdminBlogStore from "../../../store/useAdminBlogStore";
 import { toast } from "react-toastify";
 import {
   getAdminBlogs,
   adminBlogApiUrl,
+  deleteBlog,
 } from "../../../services/admin.service";
 import { useSearchParams } from "react-router";
-import type { orderBy } from "lodash";
+import { debounce } from "lodash";
 
 const useAdminBlog = () => {
   const [ascTitle, setAscTitle] = useState(true);
@@ -19,9 +20,11 @@ const useAdminBlog = () => {
 
   const setBlogs = useAdminBlogStore((state) => state.setBlogs);
   const setLoading = useAdminBlogStore((state) => state.setLoading);
+  const setDeleteLoading = useAdminBlogStore((state) => state.setDeleteLoading);
   const setTotalBlogs = useAdminBlogStore((state) => state.setTotalBlogs);
   const setTotalViews = useAdminBlogStore((state) => state.setTotalViews);
-
+  const setMeta = useAdminBlogStore((state) => state.setMeta);
+  const meta = useAdminBlogStore((state) => state.meta);
 
   const updateUrlParams = (newParams: Record<string, string | undefined>) => {
     const current = Object.fromEntries(searchParams.entries());
@@ -32,20 +35,25 @@ const useAdminBlog = () => {
     });
 
     const updated = new URLSearchParams(merged as any).toString();
-    
+
     setSearchParams(merged as any);
     setFetchUrl(updated ? `${adminBlogApiUrl}?${updated}` : adminBlogApiUrl);
   };
 
-  
   useEffect(() => {
     const query = searchParams.toString();
     setFetchUrl(query ? `${adminBlogApiUrl}?${query}` : adminBlogApiUrl);
   }, [searchParams]);
 
-  
+  const debounceSearch = useCallback(
+    debounce((value: string) => {
+      updateUrlParams({ search: value });
+    }, 500),
+    []
+  );
+
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateUrlParams({ search: e.target.value, page: "1" });
+    debounceSearch(e.target.value);
   };
 
   const clearSearchInput = () => {
@@ -53,33 +61,29 @@ const useAdminBlog = () => {
     updateUrlParams({ search: undefined, page: "1" });
   };
 
-  // 🧩 Category Filter
-  const handleCategoryChange = (value:string) => {
+  const handleCategoryChange = (value: string) => {
     updateUrlParams({ categorySlug: value, page: "1" });
   };
 
-  // 📄 Pagination
   const handlePageChange = (page: number) => {
     updateUrlParams({ page: `${page}` });
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateUrlParams({ status: e.target.value, page: "1" });
+    updateUrlParams({ status: e.target.value });
   };
 
-  // 🔽 Sorting (FULL FIX)
   const handleSort = (
     field: "title" | "createdAt" | "views",
-    order: "asc" | "desc"
+    orderBy: "asc" | "desc"
   ) => {
-    updateUrlParams({ sortBy: field, orderBy: order, page: "1" });
+    updateUrlParams({ sortBy: field, orderBy: orderBy });
 
-    if (field === "title") setAscTitle(order === "asc" ? false : true);
-    if (field === "createdAt") setAscDate(order === "asc" ? false : true);
-    if (field === "views") setAscViews(order === "asc" ? false : true);
+    if (field === "title") setAscTitle(orderBy === "asc" ? false : true);
+    if (field === "createdAt") setAscDate(orderBy === "asc" ? false : true);
+    if (field === "views") setAscViews(orderBy === "asc" ? false : true);
   };
 
-  // 📡 Fetch API
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -89,12 +93,11 @@ const useAdminBlog = () => {
         toast.error("Something went wrong");
         return;
       }
-
-      const result = await res.json();
-
-      setBlogs(result.data.blogs || []);
-      setTotalBlogs(result.data.meta.totalBlogs || 0);
-      setTotalViews(result.data.totalViews || 0);
+      const { data } = await res.json();
+      setBlogs(data.blogs || []);
+      setTotalBlogs(data.meta.totalBlogs || 0);
+      setTotalViews(data.totalViews || 0);
+      setMeta(data.meta);
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
@@ -102,7 +105,24 @@ const useAdminBlog = () => {
     }
   };
 
-  
+  const handleDeleteBlog = async (blogId: string | undefined) => {
+    try {
+      setDeleteLoading(true);
+      const res = await deleteBlog(blogId);
+      if (!res.ok) {
+        toast.error("Something went wrong");
+        return;
+      }
+      toast.success("Blog deleted successfully");
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    }
+    finally {
+      setDeleteLoading(false);
+    }
+  }
+
   useEffect(() => {
     fetchData();
   }, [fetchUrl]);
@@ -117,7 +137,9 @@ const useAdminBlog = () => {
     handleSort,
     handleCategoryChange,
     handlePageChange,
-    handleFilterChange
+    handleFilterChange,
+    meta,
+    handleDeleteBlog
   };
 };
 

@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronsLeft,
 } from "lucide-react";
+
 interface PaginationProps {
   page: {
     currentPage: number;
@@ -16,6 +17,30 @@ interface PaginationProps {
   className?: string;
 }
 
+// --------------------------
+// MAIN PAGINATION LOGIC
+// --------------------------
+const getPageWindow = (current: number, total: number, windowSize = 5) => {
+  const half = Math.floor(windowSize / 2); 
+
+  let start = current - half; 
+  let end = current + half;  
+ 
+  if (start < 1) {
+    start = 1;
+    end = windowSize; 
+  }
+
+ 
+  if (end > total) {
+    end = total;
+    start = total - windowSize + 1;
+    if (start < 1) start = 1;
+  }
+
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+};
+
 const Pagination: React.FC<PaginationProps> = ({
   page,
   handlePageChange,
@@ -23,8 +48,11 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   if (!page?.totalPages) return null;
 
+  const numbers = getPageWindow(page.currentPage, page.totalPages);
+
   return (
     <div className={`join ${className}`}>
+      {/* First Page */}
       <button
         className="join-item btn"
         onClick={() => handlePageChange(1)}
@@ -33,6 +61,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <ChevronsLeft />
       </button>
 
+      {/* Previous Page */}
       <button
         className="join-item btn"
         onClick={() => page.previousPage && handlePageChange(page.previousPage)}
@@ -41,18 +70,20 @@ const Pagination: React.FC<PaginationProps> = ({
         <ChevronLeft />
       </button>
 
-      {Array.from({ length: page.totalPages }, (_, i) => (
+      {/* Window Pages */}
+      {numbers.map((num) => (
         <button
-          key={i}
+          key={num}
           className={`join-item btn ${
-            page.currentPage === i + 1 ? "btn-active" : ""
+            page.currentPage === num ? "btn-active" : ""
           }`}
-          onClick={() => handlePageChange(i + 1)}
+          onClick={() => handlePageChange(num)}
         >
-          {i + 1}
+          {num}
         </button>
       ))}
 
+      {/* Next Page */}
       <button
         className="join-item btn"
         onClick={() => page.nextPage && handlePageChange(page.nextPage)}
@@ -61,6 +92,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <ChevronRight />
       </button>
 
+      {/* Last Page */}
       <button
         className="join-item btn"
         onClick={() => handlePageChange(page.totalPages)}

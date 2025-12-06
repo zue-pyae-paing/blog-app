@@ -5,7 +5,7 @@ import {
 } from "../../../schema/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { registerapi } from "../../../services/auth.service";
+import { registerApi } from "../../../services/auth.service";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 const useRegister = () => {
@@ -20,10 +20,8 @@ const useRegister = () => {
 
   const onSubmit = async (data: RegisterSchema) => {
     try {
-      const response = await registerapi(data);
-      console.log(response,"response")
+      const response = await registerApi(data);
       const result = await response.json();
-      console.log(result, "register api response");
       if (result.ok === false) {
         throw toast.error(result.message || "Registration failed");
       }

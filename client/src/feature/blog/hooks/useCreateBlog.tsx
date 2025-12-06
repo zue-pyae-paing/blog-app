@@ -72,7 +72,7 @@ const useCreateBlog = () => {
         toast.error(result.message || "Failed to create blog");
       }
       toast.success("Blog created successfully!");
-      console.log(result, "blog crate retun data");
+
       addBlog(result.data.newBlog);
       setPreview("");
       reset();

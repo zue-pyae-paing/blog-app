@@ -19,7 +19,6 @@ const BlogFilter = () => {
       const response = await getCategory();
       const { data } = await response.json();
       setCategories(data.categories);
-      console.log(data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -29,8 +28,8 @@ const BlogFilter = () => {
     fetchCategories();
   }, []);
   return (
-    <div className=" md:block hidden lg:w-64 md:w-full h-auto  px-3 space-y-2">
-      <label className=" input border-accent outline-none">
+    <div className=" md:block flex flex-col gap-3 lg:w-64 md:w-full h-auto  px-3 space-y-2">
+      <label className=" input border-accent outline-none w-full">
         <Search />
         <input
           ref={searchRef}

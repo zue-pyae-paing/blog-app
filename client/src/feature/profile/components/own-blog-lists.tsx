@@ -29,7 +29,7 @@ const OwnBlogLists = ({
       next={handleLoadMore}
       hasMore={hasMore}
       loader={<p className="text-center py-4">Loading more...</p>}
-      endMessage={<p className="text-center py-4">No more blogs</p>}
+      endMessage={<p className="text-center py-4"></p>}
       className="mt-4 space-y-4"
     >
       {ownBlogs?.length === 0 ? (

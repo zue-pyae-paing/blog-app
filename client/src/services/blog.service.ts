@@ -1,38 +1,45 @@
-import useAccountStore from "../store/useAccountStore";
+import { apiWrapper } from "./api.wrapper";
 
+export const blogBaseApiUrl =
+  import.meta.env.VITE_SERVER_URI + "/blogs";
 
-export const blogBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/blogs";
-
-const accessToken = useAccountStore.getState().accessToken;
-
-export const getAllBlogs = async (url: string) => {
-  return await fetch(url, { method: "GET" });
+// ---------------------------
+// GET ALL BLOGS
+// ---------------------------
+export const getAllBlogs = (url: string) => {
+  return apiWrapper(url, { method: "GET" });
 };
 
-export const getTrendingBlogs = async () => {
-  return await fetch(blogBaseApiUrl + "/trending", { method: "GET" });
+// ---------------------------
+// GET TRENDING BLOGS
+// ---------------------------
+export const getTrendingBlogs = () => {
+  return apiWrapper(`${blogBaseApiUrl}/trending`, { method: "GET" });
 };
 
-export const detialBlog = async (id: string) => {
-  return await fetch(blogBaseApiUrl + `/detail/${id}`, { method: "GET" });
+// ---------------------------
+// GET BLOG DETAIL
+// ---------------------------
+export const detailBlog = (id: string) => {
+  return apiWrapper(`${blogBaseApiUrl}/detail/${id}`, { method: "GET" });
 };
 
-export const createBlog = async (data: FormData) => {
-  return await fetch(blogBaseApiUrl + "/create", {
+// ---------------------------
+// CREATE BLOG
+// ---------------------------
+export const createBlog = (data: FormData) => {
+  return apiWrapper(`${blogBaseApiUrl}/create`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
     body: data,
   });
 };
 
-export const updateBlog = async (id: string, data: FormData) => {
-  return await fetch(blogBaseApiUrl + `/update/${id}`, {
+// ---------------------------
+// UPDATE BLOG
+// ---------------------------
+export const updateBlog = (id: string, data: FormData) => {
+  return apiWrapper(`${blogBaseApiUrl}/update/${id}`, {
     method: "PUT",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
     body: data,
   });
 };

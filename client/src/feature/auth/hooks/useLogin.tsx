@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 const useLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const setAccount = useAccountStore((state) => state.setAccount);
-  const setAccessToken = useAccountStore((state) => state.setAccessToken);
+  const setTokens = useAccountStore((state) => state.setTokens);
   const navigate = useNavigate();
 
   const {
@@ -31,7 +31,7 @@ const useLogin = () => {
 
       toast.success(result.data.message || "Login successful!");
       setAccount(result.data.userData);
-      setAccessToken(result.data.accessToken);
+      setTokens(result.data.accessToken, result.data.refreshToken);
       reset();
       navigate("/");
     } catch (error) {

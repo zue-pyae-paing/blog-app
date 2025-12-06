@@ -35,21 +35,6 @@ const useAdminUserChart = () => {
     );
   };
 
-  useEffect(() => {
-    const fetachUsers = async () => {
-      try {
-        const res = await fetch(adminUserApiUrl, {
-          method: "GET",
-        });
-        const { data } = await res.json();
-        console.log(data, "total users data");
-        // setTotalUsers(data.totalUsers);
-      } catch (error) {
-        toast.error("Failed to fetch total users");
-      }
-    };
-    fetachUsers();
-  }, []);
 
   const handleSort = (type: string) => {
     switch (type) {
@@ -71,7 +56,7 @@ const useAdminUserChart = () => {
       const { data } = await res.json();
       setChartData(data.growthData);
     } catch (error) {
-      console.log(error);
+    toast.error("Failed to fetch user growth data");
     }
   };
 

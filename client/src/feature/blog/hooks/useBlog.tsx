@@ -2,7 +2,8 @@ import { blogBaseApiUrl } from "../../../services/blog.service";
 import { useState, useEffect, useRef } from "react";
 import useBlogStore from "../../../store/useBlogStore";
 import { useSearchParams } from "react-router";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { getAdminBlogs } from "../../../services/admin.service";
 export interface Pagination {
   currentPage: number;
   nextPage: number | null;
@@ -31,7 +32,7 @@ const useBlog = () => {
   const updateUrlParams = (newParams: Record<string, string | undefined>) => {
     const current = Object.fromEntries(searchParams.entries());
     const merged = { ...current, ...newParams };
-   
+
     Object.keys(merged).forEach((key) => {
       if (!merged[key]) delete merged[key];
     });
@@ -43,7 +44,6 @@ const useBlog = () => {
     );
   };
 
- 
   useEffect(() => {
     const search = searchParams.get("search") || "";
     if (searchRef.current) searchRef.current.value = search;
@@ -52,16 +52,13 @@ const useBlog = () => {
     setFetchUrl(query ? `${blogBaseApiUrl}?${query}` : `${blogBaseApiUrl}`);
   }, [searchParams]);
 
-
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateUrlParams({ search: e.target.value, page: "1" });
+    updateUrlParams({ search: e.target.value,  });
   };
-
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateUrlParams({ category: e.target.value, page: "1" });
+    updateUrlParams({ category: e.target.value });
   };
-
 
   const handlePageChange = (pageNumber: number) => {
     updateUrlParams({ page: pageNumber.toString() });
@@ -71,23 +68,19 @@ const useBlog = () => {
     updateUrlParams({ limit: limit.toString() });
   };
 
-
   const clearSearchInput = () => {
     if (searchRef.current) searchRef.current.value = "";
-    updateUrlParams({ search: undefined, page: "1" });
+    updateUrlParams({ search: undefined });
   };
 
-
-
- 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const res = await fetch(fetchUrl);
-    if(!res.ok){
-      toast.error("Failed to fetch blogs");
-    }
+        const res = await getAdminBlogs(fetchUrl);
+        if (!res.ok) {
+          toast.error("Failed to fetch blogs");
+        }
         const { data } = await res.json();
         setBlogs(data.blogs || []);
         setLinks(data.links || []);

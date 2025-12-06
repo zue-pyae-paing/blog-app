@@ -14,11 +14,9 @@ import ChartTooltipContent from "./chart-tooltiop-content";
 import CustomLegend from "./custom-legend";
 import useAdminBlogChart from "../hooks/useAdminBlogChart";
 
-
-
 const BlogAreaChart = () => {
   const { chartData, handleSort } = useAdminBlogChart();
-console.log(chartData,'this is chart data')
+  console.log(chartData);
   return (
     <div className="card bg-primary-content p-3">
       <div className=" flex justify-between">
@@ -29,11 +27,10 @@ console.log(chartData,'this is chart data')
           </p>
         </div>
         <select
-        defaultValue="month"
+          defaultValue="month"
           onChange={(e) => handleSort(e.target.value)}
           className="select select-sm select-primary w-30"
         >
-         
           <option value={"week"}>Week</option>
           <option value={"month"}>Month</option>
           <option value={"year"}>Year</option>
@@ -48,17 +45,20 @@ console.log(chartData,'this is chart data')
             <defs>
               <linearGradient id="colorBlogs" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="20%" stopColor="#fd0543" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#f07cac" stopOpacity={0.1} />
+                <stop offset="100%" stopColor="#3fd83a" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <defs>
               <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="20%" stopColor="#3004f5" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#68c5f0" stopOpacity={0.1} />
+                <stop offset="100%" stopColor="#f0687f" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
+            <XAxis
+              dataKey="date"
+              interval={0}
+            />
             <YAxis width="auto" />
             <Tooltip content={<ChartTooltipContent />} />
             <Legend content={<CustomLegend />} />
@@ -66,7 +66,7 @@ console.log(chartData,'this is chart data')
             <Area
               type="monotone"
               dataKey="blogs"
-              stroke="#8884d8"
+              stroke="#190ef5"
               fillOpacity={1}
               fill="url(#colorBlogs)"
               isAnimationActive={true}
@@ -74,7 +74,7 @@ console.log(chartData,'this is chart data')
             <Area
               type="monotone"
               dataKey="views"
-              stroke="#220beee6"
+              stroke="#1eee0b"
               fillOpacity={2}
               fill="url(#colorViews)"
               isAnimationActive={true}

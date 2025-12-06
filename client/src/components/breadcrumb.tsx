@@ -1,4 +1,3 @@
-// Breadcrumb.tsx
 import { Link, useLocation } from "react-router";
 import React from "react";
 
@@ -8,8 +7,6 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ separator = " / " }) => {
   const location = useLocation();
-
-
 
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -35,7 +32,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ separator = " / " }) => {
             ) : (
               <span key={to}>
                 {separator}
-                <Link to={to}>{displayName}</Link>
+                <Link to={to} className="capitalize">{displayName}</Link>
               </span>
             );
           })}

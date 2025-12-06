@@ -27,7 +27,7 @@ const useComment = () => {
         if (!res.ok || !result?.data?.success) {
           throw new Error(result?.message || "Something went wrong");
         }
-        console.log(result,'fetch all messages response');
+     
         const newComments = result.data.comments || [];
         const newCursor = result.data.nextCursor || null;
 

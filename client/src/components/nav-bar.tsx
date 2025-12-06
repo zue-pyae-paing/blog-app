@@ -18,7 +18,7 @@ const Navbar = () => {
           to={"/"}
           className=" font-bold md:text-4xl text-2xl text-primary relative"
         >
-          Blog
+          MERN Blog
         </Link>
         <div className=" flex items-center ">
           <div className=" md:flex hidden space-x-2">
@@ -43,13 +43,6 @@ const Navbar = () => {
               onClick={() => setShow(false)}
             >
               Trending
-            </NavLink>
-            <NavLink
-              to="/about"
-              className="btn btn-primary btn-sm"
-              onClick={() => setShow(false)}
-            >
-              About
             </NavLink>
             {isAdmin && isAuthorized && (
               <NavLink
@@ -121,13 +114,6 @@ const Navbar = () => {
               onClick={() => setShow(false)}
             >
               Trending
-            </NavLink>
-            <NavLink
-              to="/about"
-              className="btn btn-primary   btn-sm"
-              onClick={() => setShow(false)}
-            >
-              About
             </NavLink>
             {isAuthorized ? (
               <>

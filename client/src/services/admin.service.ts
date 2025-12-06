@@ -1,60 +1,66 @@
-export const adminUserApiUrl = import.meta.env.VITE_SERVER_URI + "/admin/users";
-export const adminBlogApiUrl = import.meta.env.VITE_SERVER_URI + "/admin/blogs";
-export const adminCategoryApiUrl =
-  import.meta.env.VITE_SERVER_URI + "/admin/categories";
+import { apiWrapper } from "./api.wrapper";
 
-import { getHeaders } from "../utils/getHeaders";
+const BASE_URL = import.meta.env.VITE_SERVER_URI;
 
-export const getAdminCategories = async (url: string) => {
-  return await fetch(url, {
-    method: "GET",
-    headers: getHeaders(),
-  });
-};
+export const adminUserApiUrl = `${BASE_URL}/admin/users`;
+export const adminBlogApiUrl = `${BASE_URL}/admin/blogs`;
+export const adminCategoryApiUrl = `${BASE_URL}/admin/categories`;
 
-export const getCategoryGrowth = async (url: string) => {
-  return await fetch(url, { method: "GET", headers: getHeaders() });
-};
+// ---------------------------
+// CATEGORY
+// ---------------------------
+export const getAdminCategories = (url: string) =>
+  apiWrapper(url, { method: "GET" });
 
-export const createCategory = async (data: { name: string }) => {
-  console.log(data, 'service layer in data')
-  return await fetch(adminCategoryApiUrl, {
+export const getCategoryGrowth = (url: string) =>
+  apiWrapper(url, { method: "GET" });
+
+export const getCategory = (slug: string | undefined) =>
+  apiWrapper(`${adminCategoryApiUrl}/${slug}`, { method: "GET" });
+
+export const createCategory = (data: { name: string }) =>
+  apiWrapper(adminCategoryApiUrl, {
     method: "POST",
-    headers: getHeaders(),
     body: JSON.stringify(data),
   });
-};
 
-export const updateCategory = async (
-  slug: string,
-  data: { title: string; slug: string }
-) => {
-  return await fetch(`${adminCategoryApiUrl}/${slug}`, {
+export const updateCategory = (
+  slug: string | undefined,
+  data: { name: string }
+) =>
+  apiWrapper(`${adminCategoryApiUrl}/${slug}`, {
     method: "PATCH",
-    headers: getHeaders(),
     body: JSON.stringify(data),
   });
-};
 
-export const deleteCategory = async (slug: string | undefined) => {
-  return await fetch(`${adminCategoryApiUrl}/${slug}`, {
-    method: "DELETE",
-    headers: getHeaders(),
-  });
-};
+export const deleteCategory = (slug: string | undefined) =>
+  apiWrapper(`${adminCategoryApiUrl}/${slug}`, { method: "DELETE" });
 
-export const getAdminBlogs = async (url: string) => {
-  return await fetch(url, { method: "GET", headers: getHeaders() });
-};
+// ---------------------------
+// BLOG
+// ---------------------------
+export const getAdminBlogs = (url: string) =>
+  apiWrapper(url, { method: "GET" });
 
-export const getBlogsGrowth = async (url: string) => {
-  return await fetch(url, { method: "GET", headers: getHeaders() });
-};
+export const getBlogsGrowth = (url: string) =>
+  apiWrapper(url, { method: "GET" });
 
-export const getUsersGrowth = async (url: string) => {
-  return await fetch(url, { method: "GET", headers: getHeaders() });
-};
+export const deleteBlog = (blogId: string | undefined) =>
+  apiWrapper(`${adminBlogApiUrl}/${blogId}`, { method: "DELETE" });
 
-export const getAllUsers = async (url: string) => {
-  return await fetch(url, { method: "GET", headers: getHeaders() });
-};
+// ---------------------------
+// USERS
+// ---------------------------
+export const getUsersGrowth = (url: string) =>
+  apiWrapper(url, { method: "GET" });
+
+export const getAllUsers = (url: string) => apiWrapper(url, { method: "GET" });
+
+export const banUser = (id: string) =>
+  apiWrapper(`${adminUserApiUrl}/${id}/ban`, { method: "PATCH" });
+
+export const unbanUser = (id: string) =>
+  apiWrapper(`${adminUserApiUrl}/${id}/unban`, { method: "PATCH" });
+
+export const deleteUser = (id: string) =>
+  apiWrapper(`${adminUserApiUrl}/${id}`, { method: "DELETE" });

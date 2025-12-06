@@ -2,8 +2,9 @@ import BlogRow from "./blog-row";
 import { MoveDown, MoveUp, Search } from "lucide-react";
 import useAdminBlog from "../../hooks/useAdminBlog";
 import useAdminBlogStore from "../../../../store/useAdminBlogStore";
-import EmptyBlogStage from "./empty-blog-stage";
+import EmptyBlogStage from "../empty-blog-stage";
 import BlogsLoading from "./blogs-loading";
+import AdminPagination from "../admin-pagination";
 
 const BlogSection = () => {
   const {
@@ -14,7 +15,11 @@ const BlogSection = () => {
     searchRef,
     handleSearchInput,
     handleFilterChange,
+    handlePageChange,
+    meta,
+    handleDeleteBlog
   } = useAdminBlog();
+
 
   const blogs = useAdminBlogStore((state) => state.blogs);
   const loading = useAdminBlogStore((state) => state.loading);
@@ -64,7 +69,6 @@ const BlogSection = () => {
             <th className=" text-center">Status</th>
             <th className="">
               <div className=" flex items-center gap-x-2">
-               
                 <span className=" self-end text-end">Date</span>
                 {ascDate ? (
                   <MoveUp
@@ -101,21 +105,21 @@ const BlogSection = () => {
         <tbody>
           {loading && <BlogsLoading />}
 
-          {blogs?.length === 0 && <EmptyBlogStage />}
+          {blogs?.length === 0 && <EmptyBlogStage message="Blogs" />}
           {blogs?.map((blog) => (
-            <BlogRow key={blog._id} blog={blog} />
+            <BlogRow key={blog._id} blog={blog} handleDeleteBlog={handleDeleteBlog} />
           ))}
         </tbody>
       </table>
-      <div className=" flex items-center justify-between w-full">
-        <p className=" text-sm ">Showing 1 to 6 of 100</p>
-        <div className="join">
-          <button className="join-item btn">1</button>
-          <button className="join-item btn">2</button>
-          <button className="join-item btn btn-disabled">...</button>
-          <button className="join-item btn">99</button>
-          <button className="join-item btn">100</button>
-        </div>
+      <div className=" w-full text-end">
+      
+        <AdminPagination
+          totalPages={meta.totalPages}
+          currentPage={meta.currentPage}
+          handlePageChange={handlePageChange}
+          hasNextPage={meta.hasNextPage}
+          hasPrevPage={meta.hasPrevPage}
+        />
       </div>
     </div>
   );

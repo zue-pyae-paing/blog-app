@@ -1,45 +1,60 @@
 import type { BlogComment, UpdateBlogComment } from "../types/comment";
-import useAccountStore from "../store/useAccountStore";
-import { getHeaders } from "../utils/getHeaders";
+import { apiWrapper } from "./api.wrapper";
 
-export const commentBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/comments";
+export const commentBaseApiUrl =
+  import.meta.env.VITE_SERVER_URI + "/comments";
 
-export const getAllComments = async (blogId: string, cursor: string = "") => {
-  return await fetch(`${commentBaseApiUrl}/${blogId}?cursor=${cursor}`, {
+// ---------------------------
+// GET ALL COMMENTS
+// ---------------------------
+export const getAllComments = (blogId: string, cursor: string = "") => {
+  return apiWrapper(`${commentBaseApiUrl}/${blogId}?cursor=${cursor}`, {
     method: "GET",
   });
 };
 
-export const sendComment = async (data: BlogComment) => {
-  return await fetch(`${commentBaseApiUrl}/create/${data.blogId}`, {
+// ---------------------------
+// CREATE COMMENT
+// ---------------------------
+export const sendComment = (data: BlogComment) => {
+  return apiWrapper(`${commentBaseApiUrl}/create/${data.blogId}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${useAccountStore.getState().accessToken}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: data.content }),
   });
 };
 
-export const getComment = async (blogId: string, cmtId: string) => {
-  return await fetch(`${commentBaseApiUrl}/${blogId}/${cmtId}`, {
+// ---------------------------
+// GET ONE COMMENT
+// ---------------------------
+export const getComment = (blogId: string, cmtId: string) => {
+  return apiWrapper(`${commentBaseApiUrl}/${blogId}/${cmtId}`, {
     method: "GET",
-    headers: getHeaders(),
   });
 };
-export const updateComment = async (data: UpdateBlogComment) => {
-  return await fetch(`${commentBaseApiUrl}/edit/${data.blogId}/${data.cmtId}`, {
-    method: "PUT",
-    headers: getHeaders(),
-    body: JSON.stringify({ content: data.content }),
-  });
+
+// ---------------------------
+// UPDATE COMMENT
+// ---------------------------
+export const updateComment = (data: UpdateBlogComment) => {
+  return apiWrapper(
+    `${commentBaseApiUrl}/edit/${data.blogId}/${data.cmtId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: data.content }),
+    }
+  );
 };
-export const deleteComment = async (
+
+// ---------------------------
+// DELETE COMMENT
+// ---------------------------
+export const deleteComment = (
   blogId: string | undefined,
   cmtId: string
 ) => {
-  return await fetch(`${commentBaseApiUrl}/delete/${blogId}/${cmtId}`, {
+  return apiWrapper(`${commentBaseApiUrl}/delete/${blogId}/${cmtId}`, {
     method: "DELETE",
-    headers: getHeaders(),
   });
 };

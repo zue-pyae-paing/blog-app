@@ -1,6 +1,5 @@
-import React from "react";
 
-const EmptyBlogStage = () => {
+const EmptyStage = ({ message }: ({ message: string })) => {
   return <tr>
       <td colSpan={7}>
         <div className="flex flex-col items-center justify-center py-10 opacity-70">
@@ -9,7 +8,7 @@ const EmptyBlogStage = () => {
             alt="empty"
             className="w-20 mb-3 opacity-60"
           />
-          <p className="text-lg font-medium">No blogs found</p>
+          <p className="text-lg font-medium">No {message} found</p>
           <p className="text-sm text-gray-500">
             Try adjusting your search or filters.
           </p>
@@ -18,4 +17,4 @@ const EmptyBlogStage = () => {
     </tr>
 };
 
-export default EmptyBlogStage;
+export default EmptyStage

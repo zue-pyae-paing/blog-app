@@ -2,10 +2,14 @@ import { MoveDown, MoveUp, Search } from "lucide-react";
 import CategoryRow from "./category-row";
 import useAdminCategory from "../../hooks/useAdminCategory";
 import AdminPagination from "../admin-pagination";
+import EmptyStage from "../empty-blog-stage";
 
-const CategorySection = () => {
+const CategorySection = ({
+  showModal,
+}: {
+  showModal: (isCreate: boolean) => void;
+}) => {
   const {
-    
     handleSearchInput,
     searchRef,
     totalPages,
@@ -14,7 +18,7 @@ const CategorySection = () => {
     ascDate,
     handlePageChange,
     hasNextPage,
-    hasPreviousPage,
+    hasPrevPage,
     currentPage,
   } = useAdminCategory();
 
@@ -34,45 +38,47 @@ const CategorySection = () => {
         </label>
       </div>
 
-      <table className=" table table-zebra  w-full">
-        <thead className=" ">
-          <th className=" flex items-center gap-x-2">Title</th>
-          <th>Slug</th>
-          <th className=" text-center">Post</th>
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Slug</th>
+            <th className="text-center">Post</th>
 
-          <th className=" flex items-center gap-x-2">
-            <div className=" flex items-center gap-x-2  ml-auto">
-              {" "}
-              <span>Created</span>
-              {ascDate ? (
-                <MoveUp size={14} onClick={() => handleSort("asc")} />
-              ) : (
-                <MoveDown size={14} onClick={() => handleSort("desc")} />
-              )}
-            </div>
-          </th>
-          <th className=" text-center">Actions</th>
+            <th className="text-right">
+              <div className="flex items-center justify-end gap-x-2">
+                <span>Created</span>
+                {ascDate ? (
+                  <MoveUp size={14} onClick={() => handleSort("desc")} />
+                ) : (
+                  <MoveDown size={14} onClick={() => handleSort("asc")} />
+                )}
+              </div>
+            </th>
+
+            <th className="text-center">Actions</th>
+          </tr>
         </thead>
+
         <tbody>
+                
           {categories.length === 0 && (
-            <tr>
-              <td colSpan={5} className=" text-center ">
-                No categories found.
-              </td>
-            </tr>
+            <EmptyStage message="Categories"  />
           )}
-          {categories.map((category) => (
-            <CategoryRow key={category._id} category={category} />
+
+          {categories.map((c) => (
+            <CategoryRow key={c._id} category={c} showModal={showModal} />
           ))}
         </tbody>
       </table>
+
       <div className=" w-full text-end">
         <AdminPagination
           totalPages={totalPages}
           currentPage={currentPage}
           handlePageChange={handlePageChange}
           hasNextPage={hasNextPage}
-          hasPreviousPage={hasPreviousPage}
+          hasPrevPage={hasPrevPage}
         />
       </div>
     </div>

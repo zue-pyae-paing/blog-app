@@ -20,9 +20,9 @@ const generateColors = (count: number) => {
 };
 
 const CategoriesPieChart = () => {
-  const { chartData, handleSort } = useAdminCategoryChart();
+  const { chartData } = useAdminCategoryChart();
 
-  // Generate colors dynamically based on chartData
+
   const colorSet = generateColors(chartData.length);
 
   return (

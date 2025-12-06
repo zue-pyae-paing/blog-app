@@ -12,9 +12,9 @@ const LoginForm = () => {
     togglePasswordVisibility,
   } = useLogin();
   return (
-    <div className=" flex flex-col items-center gap-y-3 border border-white max-w-[350px] p-4 rounded-lg ">
+    <div className=" flex flex-col items-center gap-y-3 border border-primary max-w-[350px] p-4 rounded-lg ">
       <h1 className=" font-bold text-2xl text-primary">Welcome back!</h1>
-      <form className=" w-[300px] space-y-3" onSubmit={handleSubmit(onSubmit)}>
+      <form className=" w-[300px] space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <label className="floating-label">
           <span>Your Email</span>
           <input
@@ -52,7 +52,7 @@ const LoginForm = () => {
             <p className="text-error text-xs">{errors.password.message}</p>
           )}
         </label>
-        <Link to="/forget-password" className=" btn btn-link">
+        <Link to="/forgot-password" className=" btn btn-link">
           Forgot Password
         </Link>
 
@@ -64,7 +64,7 @@ const LoginForm = () => {
           {isSubmitting ? "Loading..." : "Login"}
         </button>
       </form>
-      <p className="text-center">
+      <p className="text-center text-sm">
         Don't have an account?
         <Link to="/register" className="link link-primary">
           Register here

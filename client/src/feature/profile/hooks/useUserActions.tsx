@@ -59,7 +59,6 @@ const useUserActions = () => {
       setLoading(true);
       const formData = new FormData();
       formData.append("avatar", file);
-      console.log(formData.getAll);
       const response = await changeAvatar(formData);
       const result = await response.json();
       if (!response.ok) {

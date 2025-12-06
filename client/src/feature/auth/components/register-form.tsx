@@ -13,7 +13,7 @@ const RegisterForm = () => {
     togglePasswordVisibility,
   } = useRegister();
   return (
-    <div className=" flex flex-col items-center gap-y-3 border border-white max-w-[350px] p-4 rounded-lg ">
+    <div className=" flex flex-col items-center gap-y-3 border border-primary max-w-[350px] p-4 rounded-lg ">
       <h1 className=" font-bold text-2xl text-primary">Create an account</h1>
       <form className=" w-[300px] space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <label className="floating-label">
@@ -73,7 +73,7 @@ const RegisterForm = () => {
           Register
         </button>
       </form>
-      <p className="text-center mt-3">
+      <p className="text-center mt-3 text-sm">
         Already have an account?{" "}
         <Link to="/login" className="link link-primary">
           Login here

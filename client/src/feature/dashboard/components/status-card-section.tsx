@@ -1,13 +1,15 @@
 import useAdminBlogStore from "../../../store/useAdminBlogStore";
 import useAdminBlog from "../hooks/useAdminBlog";
 import useAdminCategory from "../hooks/useAdminCategory";
+import useAdminUser from "../hooks/useAdminUser";
 import StatusCard from "./status-card";
 import { Users, FileText, Tag, TrendingUp } from "lucide-react";
 const StatusCardSection = () => {
-  const { categories } = useAdminCategory();
   useAdminBlog();
   const totalBlogs = useAdminBlogStore((state) => state.totalBlogs);
   const totalViews = useAdminBlogStore((s) => s.totalViews);
+  const { totalUsers } = useAdminUser();
+  const { totalCategories } = useAdminCategory();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <StatusCard
@@ -19,14 +21,14 @@ const StatusCardSection = () => {
       />
       <StatusCard
         title="Total Users"
-        value={20}
+        value={totalUsers}
         iconBg="bg-secondary-content"
         valueColor="text-success"
         icon={<Users size={18} className=" text-success" />}
       />
       <StatusCard
         title="Total Categories"
-        value={categories?.length}
+        value={totalCategories}
         valueColor="text-accent"
         iconBg="bg-primary-content"
         icon={<Tag size={18} className=" text-accent" />}

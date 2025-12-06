@@ -74,7 +74,7 @@ client/
 | | |----blog/
 | | |----comment/
 | | |----profile/
-| | |----about/
+| | |----trending/
 | | |----home/
 | |----types/
 | |----store/
@@ -128,6 +128,46 @@ npm run dev
 | **POST** | `/api/auth/forget-password`       | Send password reset link to user’s email         |
 | **PUT**  | `/api/auth/reset-password/:token` | Reset password using provided token              |
 
+### Admin
+
+**Base URL:** `http://localhost:8080/api/admin`
+
+#### Admin Blogs
+
+**Base URL:** `http://localhost:8080/api/admin/users`
+
+| Method     | Endpoint         | Description               |
+| ---------- | ---------------- | ------------------------- |
+| **GET**    | `/`              | Get all users             |
+| **GET**    | `/growth`        | Get user growth analytics |
+| **PATCH**  | `/:userId/ban`   | Ban a user by ID          |
+| **PATCH**  | `/:userId/unban` | Unban a user by ID        |
+| **DELETE** | `/:userId`       | Delete a user by ID       |
+
+#### Admin Blogs
+
+**Base URL:** `http://localhost:8080/api/admin/blogs`
+
+| Method     | Endpoint   | Description                                  |
+| ---------- | ---------- | -------------------------------------------- |
+| **GET**    | `/`        | Get all blogs (with pagination & filters)    |
+| **GET**    | `/growth`  | Get blogs growth analytics (week/month/year) |
+| **GET**    | `/:blogId` | Get single blog by ID                        |
+| **DELETE** | `/:blogId` | Delete blog by ID                            |
+
+#### Admin Category
+
+**Base URL:** `http://localhost:8080/api/admin/categories`
+
+| Method     | Endpoint  | Description                   |
+| ---------- | --------- | ----------------------------- |
+| **GET**    | `/`       | Get all categories            |
+| **GET**    | `/growth` | Get category growth analytics |
+| **GET**    | `/:slug`  | Get single category by slug   |
+| **POST**   | `/`       | Create new category           |
+| **PATCH**  | `/:slug`  | Update category by slug       |
+| **DELETE** | `/:slug`  | Delete category by slug       |
+
 ### Blog API Endpoints
 
 **Base URL:** `http://localhost:8080/api/blogs`
@@ -141,8 +181,6 @@ npm run dev
 | **GET**    | `/category`    | Get all available blog categories                                  |
 | **POST**   | `/create`      | Create a new blog (requires authentication & image upload)         |
 | **PUT**    | `/update/:id`  | Update an existing blog by its ID                                  |
-| **PATCH**  | `/like/:id`    | Like a blog post                                                   |
-| **PATCH**  | `/unlike/:id`  | Unlike a blog post                                                 |
 | **PATCH**  | `/publish/:id` | Publish or unpublish a blog post                                   |
 | **DELETE** | `/delete/:id`  | Delete a blog by its ID                                            |
 
@@ -173,6 +211,8 @@ npm run dev
 | **DELETE** | `/delete-account`  | Delete the user's account permanently              |
 
 ## Author
+
 Developed by **Zue Pyae Paing**
+
 - Email => zupepyaepaing.dev.gmail.com
 - GitHub => https://github.com/zue-pyae-paing
