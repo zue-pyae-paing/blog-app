@@ -9,8 +9,8 @@ export const getAllBlog = async (req, res, next) => {
     const { blogs, totalBlogs, totalPages } = await blogService.getAllBlogs(
       pageInt,
       limitInt,
+      search,
       category,
-      search
     );
     const currentPage = pageInt;
     const hasNextPage = pageInt < totalPages;
@@ -140,23 +140,6 @@ export const deleteBlog = async (req, res, next) => {
       req.params.id
     );
     res.status(200).json({ data: { success: true, message } });
-  } catch (error) {
-    next(error);
-  }
-};
-export const likeBlog = async (req, res, next) => {
-  try {
-    const blog = await blogService.likeBlog(req.user.id, req.params.id);
-    res.status(200).json({ data: { success: true, blog } });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const unlikeBlog = async (req, res, next) => {
-  try {
-    const blog = await blogService.unlikeBlog(req.user.id, req.params.id);
-    res.status(200).json({ data: { success: true, blog } });
   } catch (error) {
     next(error);
   }

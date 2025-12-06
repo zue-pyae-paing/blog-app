@@ -3,37 +3,24 @@ import adminUserService from "./admin.user.service.js";
 export const getAllUser = async (req, res, next) => {
   try {
     const { id } = req.user;
-    const { limit, page, search, status, sortBy, sortStatus } = req.query;
+    const { limit, page, search, status, sortBy, orderBy } = req.query;
 
-    const {
-      users,
-      totalPages,
-      totalUsers,
-      currentPage,
-      hasNextPage,
-      hasPreviousPage,
-    } = await adminUserService.getAllUser(
+    const { users, meta } = await adminUserService.getAllUser(
       id,
       limit,
       page,
       search,
       status,
       sortBy,
-      sortStatus
+      orderBy
     );
-    res
-      .status(200)
-      .json({
-        data: {
-          success: true,
-          users,
-          totalPages,
-          totalUsers,
-          currentPage,
-          hasNextPage,
-          hasPreviousPage,
-        },
-      });
+    res.status(200).json({
+      data: {
+        success: true,
+        users,
+        meta,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -72,14 +59,13 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-
-export const getUserGrowth = async (req,res,next)=>{
+export const getUserGrowth = async (req, res, next) => {
   try {
-    const {id}=req.user;
-    const {range}=req.query;
-    const growthData=await adminUserService.getUserGrowth(id,range);
-    res.status(200).json({data:{success:true,growthData}});
+    const { id } = req.user;
+    const { range } = req.query;
+    const growthData = await adminUserService.getUserGrowth(id, range);
+    res.status(200).json({ data: { success: true, growthData } });
   } catch (error) {
     next(error);
   }
-}
+};

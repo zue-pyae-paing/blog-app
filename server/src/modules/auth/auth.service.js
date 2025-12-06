@@ -88,7 +88,7 @@ const authService = {
     await user.save();
     return { hashedToken };
   },
-  resetPassword: async (token, password) => {
+  resetPassword: async (token, password, confirmPassword) => {
     if (!token) {
       throw createError.BadRequest("Reset Token is required");
     }
@@ -98,6 +98,9 @@ const authService = {
     }
     if (user.tokenExpiry < Date.now()) {
       throw createError.BadRequest("Reset token has expired");
+    }
+    if (password !== confirmPassword) {
+      throw createError.BadRequest("Password and confirm password do not match");
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;

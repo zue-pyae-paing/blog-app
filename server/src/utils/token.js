@@ -5,7 +5,7 @@ export const generateAcceptToken = (user) => {
     { id: user._id, role: user.role },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: "15m",
     }
   );
 };
@@ -15,7 +15,7 @@ export const genetateRefreshToken = (user) => {
     { id: user._id, role: user.role },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: "7d",
+      expiresIn: "30d",
     }
   );
 };

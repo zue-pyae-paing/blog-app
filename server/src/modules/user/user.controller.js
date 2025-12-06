@@ -2,7 +2,6 @@ import userService from "./user.service.js";
 export const getProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    console.log(userId);
     const user = await userService.getUser(req.user.id);
     res.status(200).json({ data: { success: true, user } });
   } catch (error) {

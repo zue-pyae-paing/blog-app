@@ -11,7 +11,6 @@ const fileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname).toLocaleLowerCase();
   const mimeType = file.mimetype;
   if (allowedTypes.test(extname) && allowedTypes.test(mimeType)) {
-    console.log(extname, mimeType, "upload middlware");
     cb(null, true);
   } else {
     cb(new Error("Invalid file type"), false);

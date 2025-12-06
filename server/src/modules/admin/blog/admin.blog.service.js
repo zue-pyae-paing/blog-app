@@ -53,15 +53,19 @@ const adminBlogService = {
       .map((blog) => blog.views)
       .reduce((a, b) => a + b, 0);
 
-    return {
-      blogs,
-      totalPages,
+    const meta = {
       totalBlogs,
-      limit,
-      totalViews,
+      totalPages,
+      pageSize: limit,
       currentPage: page,
       hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1,
+      hasPrevPage: page > 1,
+    };
+
+    return {
+      blogs,
+      meta,
+      totalViews,
     };
   },
 
@@ -88,105 +92,138 @@ const adminBlogService = {
     return { message: "Blog deleted successfully" };
   },
 
-  getBlogsGrowth: async (userId, range = "month") => {
-    if (!userId) throw createError.BadRequest("User ID is required");
-    const admin = await User.findOne({ _id: userId, role: "admin" });
-    if (!admin) throw createError.Unauthorized("You are not authorized");
+ getBlogsGrowth: async (userId, range = "month") => {
+  if (!userId) throw createError.BadRequest("User ID is required");
+  const admin = await User.findOne({ _id: userId, role: "admin" });
+  if (!admin) throw createError.Unauthorized("You are not authorized");
 
-    let match = {};
-    let group = {};
-    let project = {};
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const monthNames = [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
+  ];
 
-    if (range === "week") {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 6);
+ 
+  if (range === "week") {
+    const today = new Date();
+    const labels = [];
 
-      match = {
-        createdAt: { $gte: startDate },
-      };
-
-      group = {
-        _id: { $dayOfWeek: "$createdAt" },
-        
-        blogs: { $sum: 1 },
-        views: { $sum: "$views" },
-      };
-
-      project = {
-        date: {
-          $arrayElemAt: [
-            ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-            { $subtract: ["$_id", 1] },
-          ],
-        },
-        blogs: 1,
-        views: 1,
-        _id: 0,
-      };
-    } else if (range === "month") {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 29);
-      match = {
-        createdAt: { $gte: startDate },
-      };
-      group = {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-        blogs: { $sum: 1 },
-        views: { $sum: "$views" },
-      };
-      project = {
-        date: "$_id",
-        blogs: 1,
-        views: 1,
-        _id: 0,
-      };
-    } else if (range === "year") {
-      const startDate = new Date();
-      startDate.setFullYear(startDate.getFullYear() - 1);
-
-      match = {
-        createdAt: { $gte: startDate },
-      };
-      group = {
-        _id: { month: { $month: "$createdAt" } },
-        blogs: { $sum: 1 },
-        views: { $sum: "$views" },
-      };
-
-      project = {
-        date: {
-          $arrayElemAt: [
-            [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
-            { $subtract: ["$_id.month", 1] },
-          ],
-        },
-        blogs: 1,
-        views: 1,
-        _id: 0,
-      };
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      labels.push(dayNames[d.getDay()]);
     }
-    const data = await Blog.aggregate([
-      { $match: match },
-      { $group: group },
-      { $project: project },
-      { $sort: { date: 1 } },
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 6);
+
+    const rawData = await Blog.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { day: { $dayOfWeek: "$createdAt" } },
+          blogs: { $sum: 1 },
+          views: { $sum: "$views" }
+        }
+      },
+      {
+        $project: {
+          dayName: {
+            $arrayElemAt: [dayNames, { $subtract: ["$_id.day", 1] }]
+          },
+          blogs: 1,
+          views: 1,
+          _id: 0
+        }
+      }
     ]);
 
+    const map = new Map(rawData.map(item => [item.dayName, item]));
+
+    const data = labels.map(name => ({
+      date: name,
+      blogs: map.get(name)?.blogs ?? 0,
+      views: map.get(name)?.views ?? 0
+    }));
+
     return { range, data };
-  },
+  }
+
+ 
+  if (range === "month") {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const totalDays = endOfMonth.getDate();
+
+    const days = Array.from({ length: totalDays }, (_, i) => String(i + 1));
+
+    const rawData = await Blog.aggregate([
+      { $match: { createdAt: { $gte: startOfMonth, $lte: endOfMonth } } },
+      {
+        $group: {
+          _id: { day: { $dayOfMonth: "$createdAt" } },
+          blogs: { $sum: 1 },
+          views: { $sum: "$views" }
+        }
+      },
+      {
+        $project: {
+          date: { $toString: "$_id.day" },
+          blogs: 1,
+          views: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    const map = new Map(rawData.map(i => [i.date, i]));
+
+    const data = days.map(day => ({
+      date: day,
+      blogs: map.get(day)?.blogs || 0,
+      views: map.get(day)?.views || 0
+    }));
+
+    return { range, data };
+  }
+
+ 
+  if (range === "year") {
+    const startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+
+    const rawData = await Blog.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          blogs: { $sum: 1 },
+          views: { $sum: "$views" }
+        }
+      },
+      {
+        $project: {
+          monthIndex: { $subtract: ["$_id.month", 1] },
+          blogs: 1,
+          views: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    const map = new Map(rawData.map(i => [i.monthIndex, i]));
+
+    const data = monthNames.map((name, index) => ({
+      date: name,
+      blogs: map.get(index)?.blogs || 0,
+      views: map.get(index)?.views || 0
+    }));
+
+    return { range, data };
+  }
+}
+
 };
 
 export default adminBlogService;

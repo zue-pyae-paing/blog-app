@@ -5,7 +5,6 @@ import { imagekit } from "../../utils/imageKit.js";
 import createError from "http-errors";
 
 const blogService = {
-  // Get all blogs with pagination
   getAllBlogs: async (page, limit, search, category) => {
     if (!page || !limit)
       throw createError.BadRequest("Page and limit are required");
@@ -43,17 +42,13 @@ const blogService = {
   },
   getOwnBlogs: async (userId, limit = 10, cursor = null, status = "") => {
     if (!userId) throw createError.BadRequest("User ID is required");
-
     const filter = { author: userId };
-
     if (status) {
       filter.status = status;
     }
-
     if (cursor) {
       filter._id = { $lt: cursor };
     }
-
     const blogs = await Blog.find(filter)
       .select("-imageId -content -comments -likes")
       .populate("categoryId", "name slug")
@@ -71,11 +66,13 @@ const blogService = {
 
   // Get trending blogs
   getTrendingBlogs: async () => {
-    const blogs = await Blog.find()
+    const blogs = await Blog.find({ status: "publish" })
       .select("-content -imageId")
       .sort({ views: -1, createdAt: -1 })
-      .limit(10)
+      .limit(9)
       .populate("author", "username avatar email")
+      .populate("categoryId", "name slug")
+      .populate("comments", "content author")
       .lean();
 
     return blogs;
@@ -203,26 +200,6 @@ const blogService = {
     await Comment.deleteMany({ blogId });
     await blog.deleteOne();
     return { message: "Blog deleted successfully" };
-  },
-  // Like blog
-  likeBlog: async (userId, blogId) => {
-    if (!userId) throw createError.BadRequest("User ID is required");
-    if (!blogId) throw createError.BadRequest("Blog ID is required");
-    const blog = await Blog.findById(blogId);
-    if (!blog) throw createError.NotFound("Blog not found");
-    blog.likes.push(userId);
-    await blog.save();
-    return blog;
-  },
-  // Unlike blog
-  unlikeBlog: async (userId, blogId) => {
-    if (!userId) throw createError.BadRequest("User ID is required");
-    if (!blogId) throw createError.BadRequest("Blog ID is required");
-    const blog = await Blog.findById(blogId);
-    if (!blog) throw createError.NotFound("Blog not found");
-    blog.likes.pull(userId);
-    await blog.save();
-    return blog;
   },
   // Publish Blog
   publishBlog: async (blogId, userId) => {

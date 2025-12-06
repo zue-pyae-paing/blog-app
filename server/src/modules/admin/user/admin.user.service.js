@@ -4,54 +4,49 @@ import Comment from "../../../model/comment.model.js";
 import createError from "http-errors";
 import { imagekit } from "../../../utils/imageKit.js";
 
-
 const adminUserService = {
   getAllUser: async (
     userId,
     limit = 10,
     page = 1,
     search = "",
-    status = "active",
+    status = "",
     sortBy = "createdAt",
-    sortStatus = "asc"
+    orderBy = "asc"
   ) => {
     if (!userId) throw createError.BadRequest("User ID is required");
 
     const admin = await User.findOne({ _id: userId, role: "admin" });
     if (!admin) throw createError.Unauthorized("You are not authorized");
 
-    const filter = { role: "user" };
+    const filter = {};
 
-    
     if (search) {
       filter.username = { $regex: search, $options: "i" };
     }
 
-   
     if (status) {
-      const allowedStatus = ["active", "banned"];
+      const allowedStatus = ["active", "banned", ""];
       if (!allowedStatus.includes(status)) {
         throw createError.BadRequest("Invalid status filter");
       }
       filter.status = status;
     }
 
-    
     const allowedSortBy = ["username", "email", "createdAt"];
     const allowedSortStatus = ["asc", "desc"];
     if (!allowedSortBy.includes(sortBy))
       throw createError.BadRequest("Invalid sortBy");
-    if (!allowedSortStatus.includes(sortStatus))
+    if (!allowedSortStatus.includes(orderBy))
       throw createError.BadRequest("Invalid sortStatus");
 
-    const sortOption = { [sortBy]: sortStatus === "asc" ? 1 : -1 };
+    const sortOption = { [sortBy]: orderBy === "asc" ? 1 : -1 };
 
     const skip = (page - 1) * limit;
 
     const users = await User.aggregate([
       { $match: filter },
 
-      
       {
         $lookup: {
           from: "blogs",
@@ -61,14 +56,12 @@ const adminUserService = {
         },
       },
 
-      
       {
         $addFields: {
           totalBlogs: { $size: "$blogs" },
         },
       },
 
-     
       {
         $project: {
           password: 0,
@@ -88,16 +81,19 @@ const adminUserService = {
     const totalUsers = await User.countDocuments(filter);
     const totalPages = Math.ceil(totalUsers / limit);
 
-    return {
-      users,
+    const meta = {
       totalUsers,
       totalPages,
+      pageSize: limit,
       currentPage: page,
       hasNextPage: page < totalPages,
       hasPrevPage: page > 1,
     };
+    return {
+      users,
+      meta,
+    };
   },
-
   banUser: async (userId, userIdToBan) => {
     const admin = await User.findOne({ _id: userId, role: "admin" });
     if (!admin) throw createError.Unauthorized("You are not authorized");
@@ -118,6 +114,11 @@ const adminUserService = {
     const admin = await User.findOne({ _id: userId, role: "admin" });
     if (!admin) throw createError.Unauthorized("You are not authorized");
     const user = await User.findOne({ _id: userIdToDelete, role: "user" });
+
+    if (user.avatarId) {
+      await imagekit.deleteFile(user.avatarId);
+    }
+
     if (!user) throw createError.NotFound("User not found");
     const blogs = await Blog.find({ author: userIdToDelete });
 
@@ -142,95 +143,110 @@ const adminUserService = {
 
     let match = {};
     let group = {};
-    let formatList = null;
+    let timeline = [];
 
-   
+    const now = new Date();
+
     if (range === "week") {
       const start = new Date();
-      start.setDate(start.getDate() - 6);
+      start.setDate(now.getDate() - 6);
 
       match = { createdAt: { $gte: start } };
 
       group = {
-        _id: { $dayOfWeek: "$createdAt" }, 
+        _id: { $dayOfWeek: "$createdAt" },
         count: { $sum: 1 },
       };
 
-      formatList = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const weekNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      timeline = weekNames; 
     }
 
-   
     if (range === "month") {
-      const start = new Date();
-      start.setDate(start.getDate() - 29);
+      const year = now.getFullYear();
+      const month = now.getMonth();
+
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const start = new Date(year, month, 1);
 
       match = { createdAt: { $gte: start } };
 
       group = {
-        _id: {
-          $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
-        },
+        _id: { $dayOfMonth: "$createdAt" },
         count: { $sum: 1 },
       };
+
+      timeline = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     }
 
-  
     if (range === "year") {
       const start = new Date();
-      start.setFullYear(start.getFullYear() - 1);
+      start.setFullYear(now.getFullYear() - 1);
 
       match = { createdAt: { $gte: start } };
 
       group = {
-        _id: { $month: "$createdAt" }, 
+        _id: { $month: "$createdAt" },
         count: { $sum: 1 },
       };
 
-      formatList = [
-        "",
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
+      timeline = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     }
 
- 
-    const users = await User.aggregate([
+    const usersRaw = await User.aggregate([
       { $match: match },
       { $group: group },
       { $sort: { _id: 1 } },
     ]);
 
-   
-    const blogs = await Blog.aggregate([
+    const blogsRaw = await Blog.aggregate([
       { $match: match },
       { $group: group },
       { $sort: { _id: 1 } },
     ]);
 
-    
-    const result = users.map((u) => {
-      const blogData = blogs.find((b) => b._id === u._id);
+    const userMap = Object.fromEntries(
+      usersRaw.map((d) => [String(d._id), d.count])
+    );
+
+    const blogMap = Object.fromEntries(
+      blogsRaw.map((d) => [String(d._id), d.count])
+    );
+
+    const monthNames = [
+      "",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const weekNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const result = timeline.map((key, index) => {
+      let display;
+
+      if (range === "week") {
+        display = weekNames[index];
+        key = index + 1;
+      } else if (range === "month") {
+        display = String(key);
+      } else {
+        display = monthNames[key];
+      }
 
       return {
-        date:
-          range === "week"
-            ? formatList[u._id - 1] // Sun..Sat
-            : range === "year"
-            ? formatList[u._id] // Jan..Dec
-            : u._id, // "YYYY-MM-DD"
-
-        users: u.count,
-        blogs: blogData ? blogData.count : 0,
+        date: display,
+        users: userMap[String(key)] || 0,
+        blogs: blogMap[String(key)] || 0,
       };
     });
 

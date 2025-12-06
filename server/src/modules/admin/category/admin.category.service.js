@@ -1,9 +1,10 @@
 import User from "../../../model/user.model.js";
 import Blog from "../../../model/blog.model.js";
 import Category from "../../../model/category.model.js";
+import Comment from "../../../model/comment.model.js";
 import createError from "http-errors";
 import { imagekit } from "../../../utils/imageKit.js";
-import mongoose from "mongoose";
+
 
 const adminCategoryService = {
   getAllCategory: async (
@@ -43,7 +44,7 @@ const adminCategoryService = {
       .lean();
 
     const currentPage = Number(page);
-    const totalCategories = await Category.countDocuments(filter);
+    const totalCategories = await Category.countDocuments();
     const totalPages = Math.ceil(totalCategories / limit);
     const hasNextPage = currentPage < totalPages;
     const hasPrevPage = currentPage > 1;
@@ -64,10 +65,11 @@ const adminCategoryService = {
           categoryId: category._id,
         });
         return {
+          _id: category._id,
           name: category.name,
           slug: category.slug,
           value: blogCount,
-          date: category.createdAt,
+          createdAt: category.createdAt,
         };
       })
     );
@@ -77,7 +79,14 @@ const adminCategoryService = {
       meta,
     };
   },
-
+  getCategory: async (id, slug) => {
+    if (!id) throw createError.BadRequest("User ID is required");
+    const admin = await User.findOne({ _id: id, role: "admin" });
+    if (!admin) throw createError.Unauthorized("You are not authorized");
+    const category = await Category.findOne({ slug }).lean();
+    if (!category) throw createError.NotFound("Category not found");
+    return category;
+  },
   addCategory: async (userId, name) => {
     if (!userId) throw createError.BadRequest("User ID is required");
     const slug = name.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
@@ -110,53 +119,48 @@ const adminCategoryService = {
     if (!userId) throw createError.BadRequest("User ID is required");
     const admin = await User.findOne({ _id: userId, role: "admin" });
     if (!admin) throw createError.Unauthorized("You are not authorized");
-    const category = await Category.findOneAndDelete(slug);
-
+    if (!slug) throw createError.BadRequest("Category slug required");
+    const category = await Category.findOne({ slug });
     if (!category) throw createError.NotFound("Category not found");
-    const session = await mongoose.startSession();
-    session.startTransaction();
 
-    try {
-      const blogs = await Blog.find({ category: category._id })
-        .session(session)
-        .lean();
-      for (const blog of blogs) {
-        if (blog.imageId) {
-          try {
-            await imagekit.deleteFile(blog.imageId);
-          } catch (error) {
-            throw createError.InternalServerError(
-              "Failed to delete blog image from ImageKit" + error.message
-            );
-          }
+    const blogs = await Blog.find({ categoryId: category._id }).lean();
+
+    if (blogs.length === 0) {
+      await Category.deleteOne({ _id: category._id });
+      return {
+        success: true,
+        message: "Category deleted successfully",
+        deletedCategory: category,
+      };
+    }
+
+    for (const blog of blogs) {
+      if (blog.imageId) {
+        try {
+          await imagekit.deleteFile(blog.imageId);
+        } catch (err) {
+          throw createError.InternalServerError(
+            "Failed to delete blog image from ImageKit: " + err.message
+          );
         }
       }
-      await Blog.deleteMany({ category: category._id }).session(session);
-
-      await Comment.deleteMany({
-        blogId: { $in: blogs.map((b) => b._id) },
-      }).session(session);
-
-      await Category.deleteOne({ _id: category._id }).session(session);
-
-      await session.commitTransaction();
-      session.endSession();
-      return category;
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      throw createError.InternalServerError("Failed to delete category" + error.message);
     }
+    await Blog.deleteMany({ categoryId: category._id });
+    await Comment.deleteMany({
+      blogId: { $in: blogs.map((b) => b._id) },
+    });
+    await Category.deleteOne({ _id: category._id });
+    return {
+      success: true,
+      message: "Category deleted successfully",
+      deletedCategory: category,
+    };
   },
-
   getCategoryGrowth: async (userId, range = "month") => {
     if (!userId) throw createError.BadRequest("User ID is required");
-
     const admin = await User.findOne({ _id: userId, role: "admin" });
     if (!admin) throw createError.Unauthorized("You are not authorized");
-
     const categories = await Category.find().lean();
-
     let startDate = new Date();
     if (range === "week") {
       startDate.setDate(startDate.getDate() - 6);
@@ -167,9 +171,7 @@ const adminCategoryService = {
     } else {
       throw createError.BadRequest("Invalid range specified");
     }
-
     const blogs = await Blog.find({ createdAt: { $gte: startDate } }).lean();
-
     const growthData = categories.map((category) => {
       const categoryBlogs = blogs.filter(
         (blog) => blog.categoryId.toString() === category._id.toString()

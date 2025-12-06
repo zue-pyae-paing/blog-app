@@ -56,10 +56,11 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { password } = req.body;
+    const { password ,confirmPassword} = req.body;
     const { message } = await authService.resetPassword(
       req.params.token,
-      password
+      password,
+      confirmPassword
     );
     res.status(200).json({ data: { success: true, message } });
   } catch (error) {
