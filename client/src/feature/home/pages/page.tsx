@@ -35,8 +35,8 @@ const HomePage = () => {
           </div>
           <div className=" flex-1 overflow-hidden rounded-lg  shadow-lg h-80">
             <img
-              src="../../../assets/hero-section.jpeg"
-              alt="Hero"
+              src="../../../../assets/hero-section.jpeg"
+              alt="Hero Section"
               className=" w-full h-full object-cover"
             />
           </div>

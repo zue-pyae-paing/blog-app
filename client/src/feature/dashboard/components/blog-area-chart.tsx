@@ -16,7 +16,7 @@ import useAdminBlogChart from "../hooks/useAdminBlogChart";
 
 const BlogAreaChart = () => {
   const { chartData, handleSort } = useAdminBlogChart();
-  console.log(chartData);
+ 
   return (
     <div className="card bg-primary-content p-3">
       <div className=" flex justify-between">

@@ -4,18 +4,13 @@ import { apiWrapper } from "./api.wrapper";
 export const commentBaseApiUrl =
   import.meta.env.VITE_SERVER_URI + "/comments";
 
-// ---------------------------
-// GET ALL COMMENTS
-// ---------------------------
+
 export const getAllComments = (blogId: string, cursor: string = "") => {
   return apiWrapper(`${commentBaseApiUrl}/${blogId}?cursor=${cursor}`, {
     method: "GET",
   });
 };
 
-// ---------------------------
-// CREATE COMMENT
-// ---------------------------
 export const sendComment = (data: BlogComment) => {
   return apiWrapper(`${commentBaseApiUrl}/create/${data.blogId}`, {
     method: "POST",
@@ -24,18 +19,13 @@ export const sendComment = (data: BlogComment) => {
   });
 };
 
-// ---------------------------
-// GET ONE COMMENT
-// ---------------------------
 export const getComment = (blogId: string, cmtId: string) => {
   return apiWrapper(`${commentBaseApiUrl}/${blogId}/${cmtId}`, {
     method: "GET",
   });
 };
 
-// ---------------------------
-// UPDATE COMMENT
-// ---------------------------
+
 export const updateComment = (data: UpdateBlogComment) => {
   return apiWrapper(
     `${commentBaseApiUrl}/edit/${data.blogId}/${data.cmtId}`,
@@ -47,9 +37,7 @@ export const updateComment = (data: UpdateBlogComment) => {
   );
 };
 
-// ---------------------------
-// DELETE COMMENT
-// ---------------------------
+
 export const deleteComment = (
   blogId: string | undefined,
   cmtId: string

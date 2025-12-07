@@ -5,10 +5,6 @@ export const userBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/user";
 export const userOwnBlogsApiUrl =
   import.meta.env.VITE_SERVER_URI + "/blogs/my-blogs";
 
-// -------------------------
-// USER PROFILE RELATED
-// -------------------------
-
 export const changeUsername = ({ username }: { username: string }) => {
   return apiWrapper(`${userBaseApiUrl}/change-username`, {
     method: "PUT",
@@ -32,10 +28,6 @@ export const changeEmail = ({ email }: { email: string }) => {
   });
 };
 
-// -------------------------
-// PASSWORD
-// -------------------------
-
 type ChangePassword = { currentPassword: string; newPassword: string };
 
 export const changepassword = ({
@@ -48,10 +40,6 @@ export const changepassword = ({
     headers: { "Content-Type": "application/json" },
   });
 };
-
-// -------------------------
-// BLOGS (OWNER)
-// -------------------------
 
 export const getAllOwnBlogs = (status: string = "", cursor: string = "") => {
   return apiWrapper(`${userOwnBlogsApiUrl}?status=${status}&cursor=${cursor}`, {

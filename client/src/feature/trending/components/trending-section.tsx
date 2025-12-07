@@ -2,11 +2,13 @@ import { Eye, MessageCircle } from "lucide-react";
 import useTrending from "../hooks/useTrending";
 import { useNavigate } from "react-router";
 import TrendingSkeleton from "./trending-skeleton";
+import EmptyTrendingBlogState from "./empty-trending-blog-state";
 
 const TrendingSection = () => {
   const { loading, trendingBlogs } = useTrending();
   const navigator = useNavigate();
-  if (loading || !trendingBlogs) return <TrendingSkeleton />;
+  if (loading) return <TrendingSkeleton />;
+  if (!trendingBlogs.length) return <EmptyTrendingBlogState />;
   return (
     <section className=" space-y-3">
       <div className=" grid md:grid-cols-3 grid-cols-1 gap-3">

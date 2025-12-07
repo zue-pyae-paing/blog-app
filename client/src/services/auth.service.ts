@@ -8,16 +8,11 @@ import { apiWrapper } from "./api.wrapper";
 
 const BASE_URL = import.meta.env.VITE_SERVER_URI;
 
-// ---------------------------
-// GET CATEGORIES
-// ---------------------------
+
 export const getCategory = () => {
   return apiWrapper(`${BASE_URL}/blogs/category`, { method: "GET" });
 };
 
-// ---------------------------
-// LOGIN
-// ---------------------------
 export const login = (data: LoginSchema) => {
   return apiWrapper(`${BASE_URL}/auth/login`, {
     method: "POST",
@@ -26,9 +21,6 @@ export const login = (data: LoginSchema) => {
   });
 };
 
-// ---------------------------
-// REGISTER
-// ---------------------------
 export const registerApi = (data: RegisterSchema) => {
   return apiWrapper(`${BASE_URL}/auth/register`, {
     method: "POST",
@@ -37,9 +29,6 @@ export const registerApi = (data: RegisterSchema) => {
   });
 };
 
-// ---------------------------
-// FORGOT PASSWORD
-// ---------------------------
 export const forgotPassword = (data: ForgotPasswordSchema) => {
   return apiWrapper(`${BASE_URL}/auth/forget-password`, {
     method: "POST",
@@ -48,9 +37,6 @@ export const forgotPassword = (data: ForgotPasswordSchema) => {
   });
 };
 
-// ---------------------------
-// RESET PASSWORD
-// ---------------------------
 export const resetPassword = (
   token: string | undefined,
   data: ResetPasswordSchema

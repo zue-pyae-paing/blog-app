@@ -8,7 +8,6 @@ const CreateCategoryModal = ({ actions }:any) => {
     onSubmit,
     closeModal,
     isCreateModal,
-    editCategory
   } = actions;
 
  

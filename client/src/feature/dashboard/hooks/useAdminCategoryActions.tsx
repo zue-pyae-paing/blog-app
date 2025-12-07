@@ -26,7 +26,6 @@ const useAdminCategoryActions = () => {
   const [isCreateModal, setIsCreateModal] = useState<boolean>(false);
 
   const { fetchCategories } = useAdminCategory();
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const {
@@ -39,13 +38,13 @@ const useAdminCategoryActions = () => {
     resolver: zodResolver(createCategorySchema),
   });
   const modalRef = useRef<HTMLDialogElement>(null);
-  const onSubmit = async (data: CreateCategorySchema) => {
+  const onSubmit = async ({ name }: CreateCategorySchema) => {
     try {
       let res;
       if (isCreateModal) {
-        res = await createCategory({ name: data.name });
+        res = await createCategory({ name });
       } else {
-        res = await updateCategory(editCategory?.slug, { name: data.name });
+        res = await updateCategory(editCategory?.slug, { name });
       }
 
       if (!res.ok) {

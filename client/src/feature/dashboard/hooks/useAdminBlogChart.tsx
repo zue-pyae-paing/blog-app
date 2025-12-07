@@ -4,6 +4,7 @@ import {
   getBlogsGrowth,
 } from "../../../services/admin.service";
 import { useSearchParams } from "react-router";
+import { toast } from "react-toastify";
 
 
 interface BlogChartProps {
@@ -55,7 +56,7 @@ const useAdminBlogChart = () => {
       const { data } = await res.json();
       setChartData(data.data);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to fetch chart data");
     }
   };
 

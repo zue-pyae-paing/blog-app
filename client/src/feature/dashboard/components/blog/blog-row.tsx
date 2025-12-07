@@ -1,11 +1,9 @@
 import {  Eye, MoreHorizontal, Trash2 } from "lucide-react";
-
 import type { Blog } from "../../../../types/blog";
 import { format } from "date-fns";
 import { Link } from "react-router";
 
-const BlogRow = ({blog,handleDeleteBlog}: {blog: Blog,handleDeleteBlog: (id: string) => void}) => {
-  
+const BlogRow = ({blog,handleDeleteBlog,deleteLoading}: {blog: Blog,handleDeleteBlog: (id: string) => void,deleteLoading: boolean}) => {
 
   const views =
     blog?.views > 1000 ? (blog?.views / 1000).toFixed(2) + "k" : blog?.views;
@@ -44,7 +42,7 @@ const BlogRow = ({blog,handleDeleteBlog}: {blog: Blog,handleDeleteBlog: (id: str
             <li>
               <div className=" text-error" onClick={() => {handleDeleteBlog(blog?._id)}}>
                 <Trash2 size={16} />
-                <p>Delete</p>
+                <p>{deleteLoading ? "Deleting..." : "Delete"}</p>
               </div>
             </li>
           </ul>

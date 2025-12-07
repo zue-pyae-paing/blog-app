@@ -6,9 +6,6 @@ export const adminUserApiUrl = `${BASE_URL}/admin/users`;
 export const adminBlogApiUrl = `${BASE_URL}/admin/blogs`;
 export const adminCategoryApiUrl = `${BASE_URL}/admin/categories`;
 
-// ---------------------------
-// CATEGORY
-// ---------------------------
 export const getAdminCategories = (url: string) =>
   apiWrapper(url, { method: "GET" });
 
@@ -18,10 +15,13 @@ export const getCategoryGrowth = (url: string) =>
 export const getCategory = (slug: string | undefined) =>
   apiWrapper(`${adminCategoryApiUrl}/${slug}`, { method: "GET" });
 
-export const createCategory = (data: { name: string }) =>
+export const createCategory = ({ name }: { name: string }) =>
   apiWrapper(adminCategoryApiUrl, {
     method: "POST",
-    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
   });
 
 export const updateCategory = (
@@ -30,15 +30,15 @@ export const updateCategory = (
 ) =>
   apiWrapper(`${adminCategoryApiUrl}/${slug}`, {
     method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(data),
   });
 
 export const deleteCategory = (slug: string | undefined) =>
   apiWrapper(`${adminCategoryApiUrl}/${slug}`, { method: "DELETE" });
 
-// ---------------------------
-// BLOG
-// ---------------------------
 export const getAdminBlogs = (url: string) =>
   apiWrapper(url, { method: "GET" });
 
@@ -48,9 +48,6 @@ export const getBlogsGrowth = (url: string) =>
 export const deleteBlog = (blogId: string | undefined) =>
   apiWrapper(`${adminBlogApiUrl}/${blogId}`, { method: "DELETE" });
 
-// ---------------------------
-// USERS
-// ---------------------------
 export const getUsersGrowth = (url: string) =>
   apiWrapper(url, { method: "GET" });
 

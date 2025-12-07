@@ -14,8 +14,6 @@ const AdminPagination = ({
   hasNextPage: boolean;
   handlePageChange: (page: number) => void;
 }) => {
- 
-  console.log(totalPages,currentPage,hasPrevPage,hasNextPage,"this is pagination")
   return (
     <div className="join">
       <button

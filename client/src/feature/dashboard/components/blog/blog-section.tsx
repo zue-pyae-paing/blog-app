@@ -23,6 +23,7 @@ const BlogSection = () => {
 
   const blogs = useAdminBlogStore((state) => state.blogs);
   const loading = useAdminBlogStore((state) => state.loading);
+  const deleteLoading = useAdminBlogStore((state) => state.deleteLoading);
 
   return (
     <div className=" border rounded-2xl p-4 flex flex-col gap-4 items-center justify-between">
@@ -107,7 +108,7 @@ const BlogSection = () => {
 
           {blogs?.length === 0 && <EmptyBlogStage message="Blogs" />}
           {blogs?.map((blog) => (
-            <BlogRow key={blog._id} blog={blog} handleDeleteBlog={handleDeleteBlog} />
+            <BlogRow key={blog._id} blog={blog} handleDeleteBlog={handleDeleteBlog} deleteLoading={deleteLoading} />
           ))}
         </tbody>
       </table>
