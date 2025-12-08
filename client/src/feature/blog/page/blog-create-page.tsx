@@ -1,11 +1,11 @@
-import React from "react";
+
 import Container from "../../../components/container";
 import Breadcrumb from "../../../components/breadcrumb";
 import BlogCreateForm from "../components/blog-create-form";
 
 const BlogCreatePage = () => {
   return (
-    <Container className=" mt-20">
+    <Container className=" mt-20 md:w-5xl w-full">
       <Breadcrumb />
       <div className="  flex items-center justify-center flex-col gap-y-3" >
         <h1 className=" font-bold text-primary text-4xl">Create New Blog</h1>

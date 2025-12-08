@@ -5,9 +5,11 @@ const RootLayout = () => {
   return (
     <div className=" h-screen relative">
       <Navbar />
-      <Outlet />
-      <Footer />
-    </div>  
+      <div className=" w-full flex items-center flex-col justify-between">
+        <Outlet />
+        <Footer />
+      </div>
+    </div>
   );
 };
 

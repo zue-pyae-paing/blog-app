@@ -106,7 +106,7 @@ const BlogSection = () => {
         <tbody>
           {loading && <BlogsLoading />}
 
-          {blogs?.length === 0 && <EmptyBlogStage message="Blogs" />}
+          {!loading && blogs?.length === 0 && <EmptyBlogStage message="Blogs" />}
           {blogs?.map((blog) => (
             <BlogRow key={blog._id} blog={blog} handleDeleteBlog={handleDeleteBlog} deleteLoading={deleteLoading} />
           ))}

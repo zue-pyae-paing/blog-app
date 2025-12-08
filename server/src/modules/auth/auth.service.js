@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 import {
   generateAcceptToken,
-  genetateRefreshToken,
+  generateRefreshToken,
 } from "../../utils/token.js";
 
 const authService = {
@@ -45,7 +45,7 @@ const authService = {
     }
 
     const accessToken = generateAcceptToken(user);
-    const refreshToken = genetateRefreshToken(user);
+    const refreshToken = generateRefreshToken(user);
     user.refreshToken = refreshToken;
     await user.save();
 
@@ -54,24 +54,38 @@ const authService = {
 
     return { accessToken, refreshToken, userData };
   },
-  refreshToken: async (refreshToken) => {
-    if (!refreshToken) {
-      throw createError.BadRequest("Refresh token is required");
-    }
-    const verifiedRefreshToken = jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-    if (!verifiedRefreshToken) {
-      throw createError.BadRequest("Invalid refresh token");
-    }
-    const user = await User.findById(verifiedRefreshToken.id);
-    if (!user) {
-      throw createError.BadRequest("User not found");
-    }
-    const accessToken = generateAcceptToken(user);
-    return { accessToken };
-  },
+refreshToken: async (refreshToken) => {
+  if (!refreshToken) {
+    throw createError.BadRequest("Refresh token is required");
+  }
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (error) {
+    throw createError.BadRequest("Invalid refresh token");
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    throw createError.BadRequest("User not found");
+  }
+
+  if (user.refreshToken !== refreshToken) {
+    throw createError.BadRequest("Refresh token does not match stored token");
+  }
+
+  const newAccessToken = generateAcceptToken(user);
+  const newRefreshToken = generateRefreshToken(user);
+
+  user.refreshToken = newRefreshToken; 
+  await user.save();
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  };
+},
+
   forgetPassword: async (email) => {
     const user = await User.findOne({ email });
     if (!user) {

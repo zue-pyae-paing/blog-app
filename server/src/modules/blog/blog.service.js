@@ -215,6 +215,19 @@ const blogService = {
     await blog.save();
     return blog;
   },
+  draftBlog: async (blogId, userId) => {
+    if (!blogId) throw createError.BadRequest("Blog ID is required");
+    if (!userId) throw createError.BadRequest("User ID is required");
+    const blog = await Blog.findById(blogId);
+    if (!blog) throw createError.NotFound("Blog not found");
+    if (blog.author.toString() !== userId)
+      throw createError.Unauthorized(
+        "You are not authorized to draft this blog"
+      );
+    blog.status = "draft";
+    await blog.save();
+    return blog;
+  },
 };
 
 export default blogService;

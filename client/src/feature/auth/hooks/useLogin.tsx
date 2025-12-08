@@ -31,11 +31,10 @@ const useLogin = () => {
 
       toast.success(result.data.message || "Login successful!");
       setAccount(result.data.userData);
-      setTokens(result.data.accessToken, result.data.refreshToken);
+      setTokens(result.data.accessToken, result.data.userData.refreshToken);
       reset();
       navigate("/");
     } catch (error) {
-      console.error("Error registering:", error);
       toast.error("Something went wrong. Please try again!");
     }
   };

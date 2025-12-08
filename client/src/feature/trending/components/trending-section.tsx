@@ -10,7 +10,7 @@ const TrendingSection = () => {
   if (loading) return <TrendingSkeleton />;
   if (!trendingBlogs.length) return <EmptyTrendingBlogState />;
   return (
-    <section className=" space-y-3">
+    <section className=" w-full space-y-3 relative h-full">
       <div className=" grid md:grid-cols-3 grid-cols-1 gap-3">
         <div
           className="md:col-span-2 col-span-1 md:h-96 h-46 rounded-lg overflow-hidden group cursor-pointer relative"
@@ -23,7 +23,7 @@ const TrendingSection = () => {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           </div>
-          <div className="absolute inset-0 flex flex-col justify-end p-6 gap-y-2">
+          <div className="absolute  flex flex-col justify-end p-6 gap-y-2">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex items-center justify-center md:w-12 md:h-12  w-8 h-8 rounded-full bg-orange-600 font-bold text-white text-md md:text-lg">
                 #1
@@ -75,11 +75,16 @@ const TrendingSection = () => {
                 className="  group-hover:scale-110 transition-transform duration-500 w-full h-full object-cover"
               />
               <div className=" p-4 absolute inset-0  justify-end flex flex-col   ">
-                <div className=" flex flex-col gap-y-2">
-                  <div className="flex items-center justify-center   w-8 h-8 rounded-full bg-orange-600 font-bold text-white text-md">
-                    #{index + 2}
+                <div className=" flex flex-col gap-y-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center justify-center   w-8 h-8 rounded-full bg-orange-600 font-bold text-white text-md">
+                      #{index + 2}
+                    </div>
+                    <span className="px-3 py-1 bg-orange-600/20 border border-orange-500/50 rounded-full text-xs font-semibold text-orange-300">
+                      {blog?.categoryId?.name}
+                    </span>
                   </div>
-                  <h3 className=" text-xl font-bold text-white group-hover:text-orange-500">
+                  <h3 className=" text-xl font-bold capitalize text-white group-hover:text-orange-500">
                     {blog?.title}
                   </h3>
                   <div className=" flex w-full items-center justify-between">
@@ -125,7 +130,7 @@ const TrendingSection = () => {
               alt={blog?.title}
               className="  group-hover:scale-110 transition-transform duration-500 w-full h-full object-cover"
             />
-            <div className=" p-4 absolute inset-0  justify-end flex flex-col   ">
+            <div className=" p-4 absolute inset-0 justify-end flex flex-col   ">
               <div>
                 <div className="flex items-center justify-center   w-8 h-8 rounded-full bg-orange-600 font-bold text-white text-md">
                   #{index + 4}

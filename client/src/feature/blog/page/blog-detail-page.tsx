@@ -5,15 +5,15 @@ import { Clock, TagIcon, Dot, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import CommentSection from "../components/comment-section";
 import useBlogStore from "../../../store/useBlogStore";
+import BlogDetailSkeleton from "../components/blog-detail-skeleton";
 
 const BlogDetailPage = () => {
   const { loading } = useBlogDetail();
   const blog = useBlogStore((state) => state.blogDetail);
 
-
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <BlogDetailSkeleton />;
   return (
-    <Container className=" space-y-4 md:w-5xl  mt-20   ">
+    <Container className=" space-y-4 md:w-5xl  w-full mt-20   ">
       <Breadcrumb />
       <div className=" flex items-center gap-x-2">
         <div className=" flex items-center gap-x-1">
@@ -57,7 +57,7 @@ const BlogDetailPage = () => {
           </div>
         </div>
       </div>
-      <div className=" w-full h-auto rounded-lg overflow-hidden">
+      <div className=" w-full md:h-[500px] h-[300px] rounded-lg overflow-hidden">
         <img
           src={blog?.image}
           alt=""

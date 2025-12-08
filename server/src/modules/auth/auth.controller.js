@@ -31,11 +31,19 @@ export const login = async (req, res, next) => {
 
 export const refreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    const user = await authService.refreshToken(refreshToken);
-    res
-      .status(200)
-      .json({ data: { success: true, accessToken: user.accessToken } });
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token missing" });
+    }
+    const tokens = await authService.refreshToken(refreshToken);
+
+    res.status(200).json({
+      data: {
+        success: true,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -56,7 +64,7 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { password ,confirmPassword} = req.body;
+    const { password, confirmPassword } = req.body;
     const { message } = await authService.resetPassword(
       req.params.token,
       password,

@@ -10,7 +10,7 @@ const CategoryRow = ({
   category: AdminCategory;
   showModal: (isCreate: boolean) => void;
 }) => {
-  const { loading, handleDeleteCategory } = useAdminCategoryActions();
+  const { loading, handleDeleteCategory,loadingDelete } = useAdminCategoryActions();
   return (
     <tr>
       <td className=" font-medium capitalize">{category?.name}</td>
@@ -33,12 +33,12 @@ const CategoryRow = ({
           <Edit2 size={16} />
         </button>
         <button
-          disabled={loading}
+          disabled={loadingDelete}
           className=" btn btn-ghost btn-square text-error"
           type="button"
           onClick={() => handleDeleteCategory(category?.slug)}
         >
-          {loading ? "Deleting..." : <Trash2 size={16} />}
+          {loadingDelete ? "Deleting..." : <Trash2 size={16} />}
         </button>
       </td>
     </tr>

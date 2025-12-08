@@ -27,6 +27,7 @@ const useAdminCategoryActions = () => {
 
   const { fetchCategories } = useAdminCategory();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
 
   const {
     reset,
@@ -93,7 +94,7 @@ const useAdminCategoryActions = () => {
 
   const handleDeleteCategory = async (slug: string | undefined) => {
     try {
-      setLoading(true);
+      setLoadingDelete(true);
       const res = await deleteCategory(slug);
 
       if (!res.ok) {
@@ -101,7 +102,7 @@ const useAdminCategoryActions = () => {
         setLoading(false);
         return;
       }
-      setLoading(false);
+      setLoadingDelete(false);
       toast.success("Category deleted successfully");
       deleteCategoryStore(slug);
     } catch (error) {
@@ -112,6 +113,7 @@ const useAdminCategoryActions = () => {
   return {
     isCreateModal,
     loading,
+    loadingDelete,
     handleDeleteCategory,
     register,
     handleSubmit,

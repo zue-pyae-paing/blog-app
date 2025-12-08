@@ -37,6 +37,7 @@ router.put("/update/:id", authMiddleware, uplode.single("image"), updateBlog);
 
 router.patch("/publish/:id", authMiddleware, publishBlog);
 
+router.patch ("/unpublish/:id", authMiddleware, publishBlog);
 router.delete("/delete/:id", authMiddleware, deleteBlog);
 
 export default router;

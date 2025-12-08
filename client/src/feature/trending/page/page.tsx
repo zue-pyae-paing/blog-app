@@ -6,7 +6,7 @@ import HeroSection from "../components/hero-section";
 const TrendingPage = () => {
 
   return (
-    <Container className=" mt-20 ">
+    <Container className=" mt-20 md:w-6xl w-full h-full mb-4">
       <Breadcrumb />
       <HeroSection/>
       <TrendingSection/>

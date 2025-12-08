@@ -7,10 +7,12 @@ import { updateBlog } from "../../../services/blog.service";
 import useBlogStore from "../../../store/useBlogStore";
 import { getCategory } from "../../../services/auth.service";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import useBlogDetail from "./useBlogDetail";
-import { updateBlogSchema, type UpddateBlogSchema } from "../../../schema/blog.schema";
-
+import {
+  updateBlogSchema,
+  type UpddateBlogSchema,
+} from "../../../schema/blog.schema";
 
 const useUpdateBlog = () => {
   useBlogDetail();
@@ -20,8 +22,6 @@ const useUpdateBlog = () => {
   const navigate = useNavigate();
 
   const blog = useBlogStore((state) => state.blogDetail);
-
- 
 
   const {
     register,
@@ -54,7 +54,6 @@ const useUpdateBlog = () => {
     },
   });
 
-  
   useEffect(() => {
     if (blog && editor) {
       editor?.commands.setContent(blog?.content || "");
@@ -62,7 +61,7 @@ const useUpdateBlog = () => {
         title: blog.title,
         description: blog.description,
         content: blog.content,
-        categoryId: blog.categoryId.name,
+        categoryId: blog.categoryId._id,
         image: undefined,
       });
       setPreview(blog.image || null);
@@ -77,7 +76,7 @@ const useUpdateBlog = () => {
         const result = await res.json();
         if (!res.ok)
           throw new Error(result.message || "Failed to fetch categories");
-    
+
         setCategories(result.data.categories);
       } catch (err: any) {
         toast.error(err.message);
@@ -94,6 +93,7 @@ const useUpdateBlog = () => {
   };
 
   const onSubmit = async (data: UpddateBlogSchema) => {
+    console.log(data, "update blog data");
     if (!blog?._id) return toast.error("No blog ID found");
     const formData = new FormData();
     formData.append("title", data.title);
@@ -108,7 +108,10 @@ const useUpdateBlog = () => {
       if (!res.ok || !result.data?.success)
         throw new Error(result.message || "Failed to update blog");
       toast.success("Blog updated successfully!");
-      navigate(`/blog`);
+      if (result.data?.blog.status === "publish") {
+        navigate(`/blog`);
+      }
+      navigate(`/profile`);
     } catch (err: any) {
       toast.error(err.message);
     }

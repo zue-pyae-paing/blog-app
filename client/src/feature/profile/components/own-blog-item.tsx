@@ -51,7 +51,9 @@ const OwnBlogItem = ({
 
       <div className="relative flex-1 flex-col flex justify-evenly p-3 gap-3">
         <div className="space-x-3">
-          <span className="badge badge-soft badge-primary">{categoryId?.name}</span>
+          <span className="badge badge-soft badge-primary">
+            {categoryId?.name}
+          </span>
           <span
             className={`badge badge-soft ${
               status === "publish" ? "badge-success" : "badge-warning"
@@ -71,7 +73,7 @@ const OwnBlogItem = ({
           </p>
           <p className="text-sm text-primary flex items-center gap-x-3">
             <Calendar1 size={16} />
-            {formatDistanceToNow(new Date(createdAt),{addSuffix: true})}
+            {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </p>
         </div>
 
@@ -87,7 +89,14 @@ const OwnBlogItem = ({
             tabIndex={-1}
             className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
           >
-            {status === "draft" && (
+            {status === "draft" ? (
+              <li onClick={() => onPublishBlog(_id)}>
+                <a className="text-success">
+                  <CheckCircle size={16} />{" "}
+                  {isPublish ? "Publishing..." : "Publish"}
+                </a>
+              </li>
+            ) : (
               <li onClick={() => onPublishBlog(_id)}>
                 <a className="text-success">
                   <CheckCircle size={16} />{" "}

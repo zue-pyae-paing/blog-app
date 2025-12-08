@@ -1,6 +1,5 @@
 import { apiWrapper } from "./api.wrapper";
 import { blogBaseApiUrl } from "./blog.service";
-
 export const userBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/user";
 export const userOwnBlogsApiUrl =
   import.meta.env.VITE_SERVER_URI + "/blogs/my-blogs";
@@ -9,7 +8,6 @@ export const changeUsername = ({ username }: { username: string }) => {
   return apiWrapper(`${userBaseApiUrl}/change-username`, {
     method: "PUT",
     body: JSON.stringify({ username }),
-    headers: { "Content-Type": "application/json" },
   });
 };
 
@@ -24,7 +22,6 @@ export const changeEmail = ({ email }: { email: string }) => {
   return apiWrapper(`${userBaseApiUrl}/change-email`, {
     method: "PUT",
     body: JSON.stringify({ email }),
-    headers: { "Content-Type": "application/json" },
   });
 };
 
@@ -37,7 +34,6 @@ export const changepassword = ({
   return apiWrapper(`${userBaseApiUrl}/change-password`, {
     method: "PUT",
     body: JSON.stringify({ currentPassword, newPassword }),
-    headers: { "Content-Type": "application/json" },
   });
 };
 

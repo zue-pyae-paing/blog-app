@@ -17,7 +17,6 @@ export const login = (data: LoginSchema) => {
   return apiWrapper(`${BASE_URL}/auth/login`, {
     method: "POST",
     body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" },
   });
 };
 
@@ -25,7 +24,6 @@ export const registerApi = (data: RegisterSchema) => {
   return apiWrapper(`${BASE_URL}/auth/register`, {
     method: "POST",
     body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" },
   });
 };
 
@@ -33,7 +31,6 @@ export const forgotPassword = (data: ForgotPasswordSchema) => {
   return apiWrapper(`${BASE_URL}/auth/forget-password`, {
     method: "POST",
     body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" },
   });
 };
 
@@ -44,6 +41,5 @@ export const resetPassword = (
   return apiWrapper(`${BASE_URL}/auth/reset-password/${token}`, {
     method: "PUT",
     body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" },
   });
 };

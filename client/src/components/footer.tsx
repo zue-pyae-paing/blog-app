@@ -7,8 +7,8 @@ import { Link } from "react-router";
 const Footer = () => {
   const { categories } = useCreateBlog();
   return (
-    <footer className=" p-4 bg-base-300">
-      <Container className="">
+    <footer className=" p-4 bg-base-300 mt-auto">
+      <Container className=" ">
         <div className="grid grid-cols-4 gap-3 ">
           <div className=" space-y-3 md:col-span-1 col-span-4 ">
             <h2 className=" font-black text-2xl text-primary">MERN Blog</h2>

@@ -153,3 +153,12 @@ export const publishBlog = async (req, res, next) => {
     next(error);
   }
 };
+
+export const draftBlog = async (req, res, next) => {
+  try {
+    const blog = await blogService.draftBlog(req.params.id, req.user.id);
+    res.status(200).json({ data: { success: true, blog } });
+  } catch (error) {
+    next(error);
+  }
+};

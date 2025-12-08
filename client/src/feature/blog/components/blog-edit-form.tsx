@@ -20,7 +20,6 @@ const BlogEditForm = () => {
 
   return (
     <form className="relative space-y-3 p-6" onSubmit={handleSubmit(onSubmit)}>
-      {/* Title */}
       <div className="bg-base-200 p-6 rounded-lg space-y-3 border border-base-300">
         <h3 className="font-bold text-info text-xl">Post Title</h3>
         <p className="text-sm text-base-content">
@@ -116,7 +115,7 @@ const BlogEditForm = () => {
           >
             <option value="">Select a category</option>
             {categories?.map((cat) => (
-              <option key={cat._id} value={cat.name} className="capitalize">
+              <option key={cat._id} value={cat._id} className="capitalize">
                 {cat.name}
               </option>
             ))}

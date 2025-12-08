@@ -7,7 +7,7 @@ import BlogEditForm from "../components/blog-edit-form";
 
 const BlogUpdatePage = () => {
   return (
-    <Container className="mt-20">
+    <Container className="mt-20 md:6xl w-full mb-4">
       <Breadcrumb />
       <div className="  flex items-center justify-center flex-col gap-y-3">
         <h1 className=" font-bold text-primary text-4xl">Update Blog</h1>
