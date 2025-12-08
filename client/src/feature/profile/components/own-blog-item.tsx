@@ -17,7 +17,7 @@ interface OwnBlogItemProps {
   isPublish: boolean;
   blog: Blog;
   onPublishBlog: (id: string) => void;
-  onUnpublishBlog: (id: string) => void;
+  onUnpublish: (id: string) => void;
   onDeleteBlog: (id: string) => void;
 }
 
@@ -26,7 +26,7 @@ const OwnBlogItem = ({
   isPublish,
   blog,
   onPublishBlog,
-  onUnpublishBlog,
+  onUnpublish,
   onDeleteBlog,
 }: OwnBlogItemProps) => {
   const {
@@ -100,7 +100,7 @@ const OwnBlogItem = ({
                 </a>
               </li>
             ) : (
-              <li onClick={() => onUnpublishBlog(_id)}>
+              <li onClick={() => onUnpublish(_id)}>
                 <a className="text-error">
                   <ShieldAlertIcon size={16} />
                   {isPublish ? "Drafting..." : "Draft"}

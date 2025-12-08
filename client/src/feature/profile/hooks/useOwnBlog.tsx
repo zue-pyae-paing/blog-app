@@ -3,6 +3,7 @@ import {
   deleteBlog,
   getAllOwnBlogs,
   publishBlog,
+  unpublishBlog,
 } from "../../../services/user.service";
 import type { Blog } from "../../../types/blog";
 import { toast } from "react-toastify";
@@ -79,7 +80,7 @@ const useOwnBlog = () => {
   const handleUnpublishBlog = async (id: string) => {
     try {
       setIsPublishLoading(true);
-      const res = await publishBlog(id);
+      const res = await unpublishBlog(id);
       const result = await res.json();
 
       if (!res.ok || !result?.data?.success) {
