@@ -11,6 +11,7 @@ interface OwnBlogListsProps {
   handleLoadMore: () => void;
   ownBlogs: Blog[];
   onPublish: (id: string) => void;
+  onUnpublish: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -23,6 +24,7 @@ const OwnBlogLists = ({
   handleLoadMore,
   hasMore,
   totalBlogs,
+  onUnpublish,
 }: OwnBlogListsProps) => {
   return (
     <InfiniteScroll
@@ -50,6 +52,7 @@ const OwnBlogLists = ({
           <OwnBlogItem
             isDelete={isDeleteLoading}
             isPublish={isPublishLoading}
+            onUnpublish={onUnpublish}
             blog={blog}
             key={blog._id}
             onPublishBlog={onPublish}

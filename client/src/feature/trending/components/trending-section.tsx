@@ -23,7 +23,7 @@ const TrendingSection = () => {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           </div>
-          <div className="absolute  flex flex-col justify-end p-6 gap-y-2">
+          <div className="absolute inset-0 flex flex-col justify-end p-6 gap-y-2">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex items-center justify-center md:w-12 md:h-12  w-8 h-8 rounded-full bg-orange-600 font-bold text-white text-md md:text-lg">
                 #1

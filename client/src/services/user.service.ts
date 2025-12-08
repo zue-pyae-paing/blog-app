@@ -49,6 +49,12 @@ export const publishBlog = (id: string) => {
   });
 };
 
+export const unpublishBlog = (id: string) => {
+  return apiWrapper(`${blogBaseApiUrl}/unpublish/${id}`, {
+    method: "PATCH",
+  });
+}
+
 export const deleteBlog = (id: string) => {
   return apiWrapper(`${blogBaseApiUrl}/delete/${id}`, {
     method: "DELETE",

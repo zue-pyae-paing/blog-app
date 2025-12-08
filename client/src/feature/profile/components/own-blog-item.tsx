@@ -5,6 +5,7 @@ import {
   Edit2,
   Eye,
   MoreVertical,
+  ShieldAlertIcon,
   Trash2,
 } from "lucide-react";
 import type { Blog } from "../../../types/blog";
@@ -16,6 +17,7 @@ interface OwnBlogItemProps {
   isPublish: boolean;
   blog: Blog;
   onPublishBlog: (id: string) => void;
+  onUnpublishBlog: (id: string) => void;
   onDeleteBlog: (id: string) => void;
 }
 
@@ -24,6 +26,7 @@ const OwnBlogItem = ({
   isPublish,
   blog,
   onPublishBlog,
+  onUnpublishBlog,
   onDeleteBlog,
 }: OwnBlogItemProps) => {
   const {
@@ -97,10 +100,10 @@ const OwnBlogItem = ({
                 </a>
               </li>
             ) : (
-              <li onClick={() => onPublishBlog(_id)}>
-                <a className="text-success">
-                  <CheckCircle size={16} />{" "}
-                  {isPublish ? "Publishing..." : "Publish"}
+              <li onClick={() => onUnpublishBlog(_id)}>
+                <a className="text-error">
+                  <ShieldAlertIcon size={16} />
+                  {isPublish ? "Drafting..." : "Draft"}
                 </a>
               </li>
             )}

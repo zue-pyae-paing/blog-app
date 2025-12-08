@@ -76,6 +76,26 @@ const useOwnBlog = () => {
     }
   };
 
+  const handleUnpublishBlog = async (id: string) => {
+    try {
+      setIsPublishLoading(true);
+      const res = await publishBlog(id);
+      const result = await res.json();
+
+      if (!res.ok || !result?.data?.success) {
+        toast.error(result?.message || "Something went wrong");
+        return;
+      }
+
+      toast.success(result?.message || "Blog unpublished successfully!");
+      fetchOwnBlogs(selected === "all" ? "" : selected);
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsPublishLoading(false);
+    }
+  };
+
   const handleDeleteBlog = async (id: string) => {
     try {
       setIsDeleteLoading(true);
@@ -107,6 +127,7 @@ const useOwnBlog = () => {
     hasMore,
     handleLoadMore,
     totalBlogs,
+    handleUnpublishBlog
   };
 };
 

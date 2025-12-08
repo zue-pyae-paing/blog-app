@@ -3,8 +3,6 @@ import useAccountStore from "../store/useAccountStore";
 export const apiWrapper = async (url: string, options: RequestInit = {}) => {
   const store = useAccountStore.getState();
   let { accessToken, refreshToken } = store;
-
-  console.log(refreshToken,'this is refresh tokne soter ')
   const isFormData = options.body instanceof FormData;
 
   const headers = {
@@ -17,7 +15,6 @@ export const apiWrapper = async (url: string, options: RequestInit = {}) => {
 
   // Token expired -> try to refresh
   if (response.status === 401 && refreshToken) {
-    console.log(refreshToken,'this is refresh token')
     const refreshRes = await fetch(
       `${import.meta.env.VITE_SERVER_URI}/auth/refresh-token`,
       {

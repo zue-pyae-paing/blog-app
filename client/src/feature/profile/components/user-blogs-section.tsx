@@ -14,6 +14,7 @@ const UserOwnBlogsSection = () => {
     handleDeleteBlog,
     hasMore,
     totalBlogs,
+    handleUnpublishBlog,
   } = useOwnBlog();
 
   return (
@@ -65,6 +66,7 @@ const UserOwnBlogsSection = () => {
         hasMore={hasMore}
         handleLoadMore={handleLoadMore}
         totalBlogs={totalBlogs}
+        onUnpublish={handleUnpublishBlog}
       />
     </section>
   );

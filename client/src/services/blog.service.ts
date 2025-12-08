@@ -1,7 +1,4 @@
-import useAccountStore from "../store/useAccountStore";
 import { apiWrapper } from "./api.wrapper";
-
-const accessToken = useAccountStore.getState().accessToken
 
 export const blogBaseApiUrl = import.meta.env.VITE_SERVER_URI + "/blogs";
 
